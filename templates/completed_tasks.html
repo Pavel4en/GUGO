@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Completed Tasks</title>
+  </head>
+  <body>
+    <h1>Completed Tasks</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in archive_tasks %}
+          <tr>
+            <td>{{ task.name }}</td>
+            <td>{{ task.description }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <a href="{{ url_for('index') }}">Back to Tasks</a>
+  </body>
+</html>

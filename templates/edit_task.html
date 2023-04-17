@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Edit Task</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <h1>Edit Task</h1>
+    <form method="POST" action="{{ url_for('edit_task', task_id=task['_id']) }}">
+      <label for="task_name">Task Name:</label>
+      <input type="text" id="task_name" name="task_name" value="{{ task['name'] }}">
+      <label for="task_description">Task Description:</label>
+      <textarea id="task_description" name="task_description">{{ task['description'] }}</textarea>
+      <button type="submit">Save</button>
+    </form>
+  </body>
+</html>

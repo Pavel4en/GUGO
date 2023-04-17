@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ToDo List</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+  </head>
+  <body>
+    <h1>ToDo List</h1>
+    
+    
+    <form method="POST" action="{{ url_for('add_task') }}">
+      <label for="task_name">Task Name:</label>
+      <input type="text" id="task_name" name="task_name">
+      <label for="task_description">Task Description:</label>
+      <input type="text" id="task_description" name="task_description">
+      <button type="submit">Add Task</button>
+    </form>
+    <table>
+      <tr>
+        <th>Task Name</th>
+        <th>Task Description</th>
+        <th>Actions</th>
+      </tr>
+      {% for task in tasks %}
+      <tr>
+        <td>{{ task.name }}</td>
+        <td>{{ task.description }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('delete_task', task_id=task._id) }}">
+            <button type="submit">Delete</button>
+          </form>
+          <form method="GET" action="{{ url_for('edit_task', task_id=task._id) }}">
+            <button type="submit">Edit</button>
+          </form>
+          {% if not task.completed %}
+          <form method="POST" action="{{ url_for('complete_task', task_id=task._id) }}">
+            <button type="submit">Complete</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+    <a href="{{ url_for('completed_tasks') }}">View Completed Tasks</a>
+  </body>
+</html>
