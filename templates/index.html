@@ -20,12 +20,16 @@
       <tr>
         <th>Task Name</th>
         <th>Task Description</th>
+        <th>Difficulty</th>
+        <th>Coins</th>
         <th>Actions</th>
       </tr>
       {% for task in tasks %}
       <tr>
         <td>{{ task.name }}</td>
         <td>{{ task.description }}</td>
+        <td>{{ task.difficulty }}</td>
+        <td>{{ task.coins}}</td>
         <td>
           <form method="POST" action="{{ url_for('delete_task', task_id=task._id) }}">
             <button type="submit">Delete</button>
