@@ -3,7 +3,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 import openai
 
-# Подключаем api нейросетки
+# Подключаем api нейросетки davinci
 openai.api_key = "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"
 
 app = Flask(__name__)
