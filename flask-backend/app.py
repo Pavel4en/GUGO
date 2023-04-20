@@ -16,7 +16,6 @@ tasks = db.tasks
 archive_tasks = db.archive_tasks
 
 
-
 @app.route('/')
 def index():
     # Получаем все задачи из коллекции и передаем их в шаблон
@@ -58,7 +57,9 @@ def add_task():
             coins = 1000
 
         # Добавляем задачу в коллекцию
-        tasks.insert_one({'name': task_name, 'description': task_description, 'completed': False, 'difficulty': difficulty, 'coins': coins})
+        tasks.insert_one(
+            {'name': task_name, 'description': task_description, 'completed': False, 'difficulty': difficulty,
+             'coins': coins})
         return redirect(url_for('index'))
 
 
@@ -100,11 +101,10 @@ def edit_task(task_id):
                 coins = 1000
 
         # Обновляем данные задачи в базе данных
-        tasks.update_one({'_id': ObjectId(task_id)}, {'$set': {'name': task_name, 'description': task_description, 'difficulty': difficulty, 'coins': coins}})
+        tasks.update_one({'_id': ObjectId(task_id)}, {
+            '$set': {'name': task_name, 'description': task_description, 'difficulty': difficulty, 'coins': coins}})
         return redirect(url_for('index'))
     return render_template('edit_task.html', task=task)
-
-
 
 
 @app.route('/delete_task/<task_id>', methods=['POST'])
@@ -131,7 +131,6 @@ def complete_task(task_id):
 def completed_tasks():
     # Получаем все выполненные задачи из коллекции и передаем их в шаблон
     return render_template('completed_tasks.html', archive_tasks=archive_tasks.find())
-
 
 
 if __name__ == '__main__':
