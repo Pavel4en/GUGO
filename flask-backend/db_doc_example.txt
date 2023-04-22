@@ -1,0 +1,33 @@
+{
+ "_id": "64433fc8f8cf3a9d0ef35ca9",
+ "gems": 100,
+ "inventory": [
+     "644382cedfe82f69e76fe880"
+ ],
+ "pet": {
+     "hunger": 930.3166044425965,
+     "hunger_per_sec": 0.01,
+     "last_update_unixtime": 1682147808.7566466,
+     "name": "danuil",
+     "worn_things_ids": []
+ }
+}
+
+{
+ "_id": "644382cedfe82f69e76fe880",
+ "name": "boots",
+ "price": 200
+}
+
+{
+ "_id": "64434100dfe82f69e76fe87e",
+ "name": "bulochka s koricey",
+ "price": 100,
+ "satiety": "60"
+},
+{
+ "_id": "64434153dfe82f69e76fe87f",
+ "name": "komplexniy obed v stolovoy b korpusa",
+ "price": 700,
+ "satiety": "300"
+}
