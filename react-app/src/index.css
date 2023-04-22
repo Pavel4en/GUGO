@@ -1,4 +1,4 @@
-/* *, *::after, *::before {
+ *, *::after, *::before {
   box-sizing: inherit;
   margin: 0;
   padding: 0;
@@ -50,4 +50,4 @@ a {
   justify-content: center;
   gap: 40px;
   margin-bottom: 52px;
-} */
+}
