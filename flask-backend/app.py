@@ -611,9 +611,8 @@ def complete_task(task_id):
 
 @app.route('/completed_tasks')
 def get_completed_tasks():
-    all_completed_tasks_cursor = archive_tasks.find()
     completed_tasks_list = []
-    for complete_task in all_completed_tasks_cursor:
+    for complete_task in archive_tasks.find():
         complete_task["_id"] = str(complete_task["_id"])
         completed_tasks_list.append(complete_task)
     return completed_tasks_list
@@ -621,9 +620,8 @@ def get_completed_tasks():
 
 @app.route('/uncompleted_tasks')
 def get_uncompleted_tasks():
-    all_uncompleted_tasks_cursor = tasks.find()
     uncompleted_tasks_list = []
-    for incomplete_task in all_uncompleted_tasks_cursor:
+    for incomplete_task in tasks.find():
         incomplete_task["_id"] = str(incomplete_task["_id"])
         uncompleted_tasks_list.append(incomplete_task)
     return uncompleted_tasks_list
