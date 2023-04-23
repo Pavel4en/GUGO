@@ -1,13 +1,19 @@
-from flask import Flask, render_template, request, redirect, url_for, make_response
+from flask import Flask, render_template, request, make_response
+
 from pymongo import MongoClient
+
 from bson.objectid import ObjectId
-import openai
+
 from time import time
+
 import json
 import traceback
 
 # Подключаем api нейросетки davinci
-openai.api_key = "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"
+import openai
+from config import api_key
+openai.api_key = api_key
+
 
 app = Flask(__name__)
 client = MongoClient("mongodb+srv://pavel4en:fjzQDT4g7vOTRhLD@gugo.dzfexwi.mongodb.net/?retryWrites=true&w=majority")
@@ -192,7 +198,7 @@ class GameItems:
             item["_id"] = str(item["_id"])
             self.items_dict[str(item["_id"])] = item
 
-    # Получить вещь по ей id. Если такой вещи нет, возвращает None
+    # Получить вещь по её id. Если такой вещи нет, возвращает None
     def get_item(self, item_id: str):
         if item_id in self.items_dict:
             return Item(self.items_dict[item_id])
@@ -362,6 +368,7 @@ def exc_handler(route_func):
                       str(e)
             app.logger.error(log_msg)
             return GameResponse("fail", "internal error", {}).to_dict(), 500
+
     exc_handled_route_func.__name__ = route_func.__name__
     return exc_handled_route_func
 
@@ -555,6 +562,7 @@ class Task:
             "completed": self.completed
         }
 
+
 @app.route('/')
 def index():
     # Получаем все задачи из коллекции и передаем их в шаблон
@@ -609,7 +617,7 @@ def complete_task(task_id):
     return make_response("", 200)
 
 
-@app.route('/completed_tasks')
+@app.route('/completed_tasks/')
 def get_completed_tasks():
     completed_tasks_list = []
     for complete_task in archive_tasks.find():
