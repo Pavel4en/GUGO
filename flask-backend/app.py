@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, make_response
+from flask_cors import CORS
 
 from pymongo import MongoClient
 
@@ -18,6 +19,9 @@ openai.api_key = api_key
 app = Flask(__name__)
 client = MongoClient("mongodb+srv://pavel4en:fjzQDT4g7vOTRhLD@gugo.dzfexwi.mongodb.net/?retryWrites=true&w=majority")
 db = client['ToDo_db']
+
+# Хедеры для ориджина
+cors = CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 # Создаем коллекцию задач
 tasks = db.tasks
@@ -794,8 +798,8 @@ def index():
 #
 # INPUT:
 # {
-#     "task_name": "name",
-#     "task_description": "desc"
+#     "name": "name",
+#     "description": "desc"
 # }
 #
 # OUTPUT:
@@ -805,8 +809,8 @@ def add_task():
     # Получаем словарь из json строки из запроса
     request_data = request.get_json()
 
-    task_name = str(request_data['task_name'])
-    task_description = str(request_data['task_description'])
+    task_name = str(request_data['name'])
+    task_description = str(request_data['description'])
 
     task = Task.create_new_task(task_name, task_description)
     tasks.insert_one(task.to_dict())
@@ -818,9 +822,9 @@ def add_task():
 #
 # INPUT:
 # {
-#     "task_id": "6443be64eadf49c6182b9f9f",
-#     "task_name": "name",
-#     "task_description": "desc"
+#     "_id": "6443be64eadf49c6182b9f9f",
+#     "name": "name",
+#     "description": "desc"
 # }
 #
 # OUTPUT:
@@ -830,9 +834,9 @@ def edit_task():
     # Получаем словарь из json строки из запроса
     request_data = request.get_json()
 
-    task_id = str(request_data['task_id'])
-    task_name = str(request_data['task_name'])
-    task_description = str(request_data['task_description'])
+    task_id = str(request_data['_id'])
+    task_name = str(request_data['name'])
+    task_description = str(request_data['description'])
 
     task = Task.create_new_task(task_name, task_description)
     tasks.update_one({'_id': ObjectId(task_id)}, {'$set': task.to_dict()})
@@ -844,7 +848,7 @@ def edit_task():
 #
 # INPUT:
 # {
-#     "task_id": "6443be64eadf49c6182b9f9f"
+#     "_id": "6443be64eadf49c6182b9f9f"
 # }
 #
 # OUTPUT:
@@ -853,7 +857,7 @@ def edit_task():
 def delete_task():
     # Получаем словарь из json строки из запроса
     request_data = request.get_json()
-    task_id = str(request_data["task_id"])
+    task_id = str(request_data["_id"])
 
     # Удаляем задачу из коллекции
     tasks.delete_one({'_id': ObjectId(task_id)})
@@ -864,7 +868,7 @@ def delete_task():
 #
 # INPUT:
 # {
-#     "task_id": "6443be64eadf49c6182b9f9f"
+#     "_id": "6443be64eadf49c6182b9f9f"
 # }
 #
 # OUTPUT:
@@ -873,7 +877,7 @@ def delete_task():
 def complete_task():
     # Получаем словарь из json строки из запроса
     request_data = request.get_json()
-    task_id = str(request_data["task_id"])
+    task_id = str(request_data["_id"])
 
     # Получаем задачу по ее id
     task = tasks.find_one({'_id': ObjectId(task_id)})

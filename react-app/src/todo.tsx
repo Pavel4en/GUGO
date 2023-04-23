@@ -1,40 +1,109 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './todo.css';
 
 
+interface ITask {
+    _id: string,
+    coins: number,
+    completed: false,
+    description: string,
+    difficulty: number,
+    name: string
+}
+
+interface ITaskComponent extends JSX.Element {
+}
+
+interface ITaskComponentArr {
+    taskComponentArr: ITaskComponent[]
+}
+
+interface IAddTask {
+    addTask: (task: { name: string, description: string }) => void
+}
+
+
+const JSONFromURL = async <TResponse, >(url: string, config: RequestInit = {}): Promise<TResponse> => {
+    try {
+        const response = await fetch(url, config);
+        return await response.json();
+    } catch (error) {
+        // TODO: Adequate exceptions
+        throw Error;
+    }
+}
+
+
+const parseTasksFromURL = (url: string): Promise<ITaskComponent[]> => {
+    return JSONFromURL<ITask[]>(url,
+        {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+        })
+        .then((data: ITask[]): ITaskComponent[] => data.map(
+                (task: ITask): ITaskComponent =>
+                    <TaskListEntry {...task}/>
+            )
+        );
+}
+const getCompletedTasks = (): Promise<ITaskComponent[]> => {
+    return parseTasksFromURL('http://localhost:5000/completed_tasks/')
+}
+
+const getIncompleteTasks = (): Promise<ITaskComponent[]> => {
+    return parseTasksFromURL('http://localhost:5000/uncompleted_tasks');
+}
+
+
 const TodoApp = () => {
-    const [tasksList, setTasksList] = useState<JSX.Element[]>([]);
+    const [taskComponentArr, setTaskComponentArr] = useState<ITaskComponent[]>([]);
 
-    const addTask = (task: JSX.Element) => {
-        setTasksList([
-            ...tasksList,
-            task
-        ]);
+    const updateTasksFromDB = () => {
+        getIncompleteTasks().then((tasks) => setTaskComponentArr(tasks))
     }
 
-    const deleteTask = (task: JSX.Element) => {
+    const addTask = (task: { name: string, description: string }) => {
+        const requestOption = {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                name: task.name,
+                description: task.description
+            })
+        }
 
+        fetch('http://localhost:5000/add_task', requestOption)
+            .then(updateTasksFromDB)
+            .catch((e) => {
+                throw Error(e);
+                // TODO: exceptions
+            });
     }
 
-    const editTast = (task: JSX.Element) => {
-
+    const deleteTask = (task: ITaskComponent) => {
+        // TODO
     }
+
+    const editTask = (task: ITaskComponent) => {
+        // TODO
+    }
+
+    useEffect(() => {
+        updateTasksFromDB();
+    }, [])
+
 
     return (
         <div className="todo_app">
             <TaskManageBar
                 addTask={addTask}/>
             <TaskList
-                tasksList={tasksList}/>
+                taskComponentArr={taskComponentArr}/>
         </div>
     );
 }
 
-
-interface IAddTask {
-    addTask: (task: JSX.Element) => void
-}
-const TaskManageBar = ({addTask}: {addTask: (task: JSX.Element) => void}) => {
+const TaskManageBar = ({addTask}: IAddTask) => {
     return (
         <div className="task_manage_bar">
             <TaskSearchForm/>
@@ -54,12 +123,10 @@ const TaskAddForm = ({addTask}: IAddTask) => {
             taskDescription: { value: string }
         };
 
-        addTask(
-            <TaskListEntry
-                initTaskName={target.taskName.value}
-                initTaskDescription={target.taskDescription.value}
-                initTaskID="TASKID"/>
-        )
+        addTask({
+            name: target.taskName.value,
+            description: target.taskDescription.value
+        })
     }
 
     return (
@@ -82,11 +149,7 @@ const TaskSearchForm = () => {
 }
 
 
-interface ITasksArr {
-    tasksList: JSX.Element[]
-}
-const TaskList = ({tasksList}: ITasksArr) => {
-    console.log(tasksList[0]);
+const TaskList = ({taskComponentArr}: ITaskComponentArr) => {
     return (
         <div className="task_list">
             <div className="task_list_header">
@@ -97,35 +160,36 @@ const TaskList = ({tasksList}: ITasksArr) => {
             </div>
 
             <div className="task_list_body">
-                {tasksList}
+                {taskComponentArr}
             </div>
         </div>
     );
 }
 
 
-interface ITaskListElement {
-    initTaskName: string,
-    initTaskDescription: string,
-    initTaskID: string
-}
-const TaskListEntry = ({initTaskName, initTaskDescription, initTaskID}: ITaskListElement) => {
-    const [taskID, setTaskID] = useState(initTaskID);
-    const [taskName, setTaskName] = useState(initTaskName);
-    const [taskDescription, setTaskDescription] = useState(initTaskDescription);
+const TaskListEntry = ({_id, coins, completed, description, name, difficulty}: ITask) => {
+    const taskID = _id;
+
+    const [taskDifficulty, setTaskDifficulty] = useState(difficulty)
+    const [taskReward, setTaskReward] = useState(coins);
+    const [taskIsCompleted, setTaskIsCompleted] = useState(completed);
+    const [taskName, setTaskName] = useState(name);
+    const [taskDescription, setTaskDescription] = useState(description);
+
 
     return (
         <div className="task_list_element">
             <div className="content">
-                <input type="text" className="text" value={taskID} readOnly/>
                 <input type="text" className="text" value={taskName} readOnly/>
                 <input type="text" className="text" value={taskDescription} readOnly/>
+                <input type="text" className="text" value={taskDifficulty} readOnly/>
+                <input type="text" className="text" value={taskReward} readOnly/>
             </div>
             <div className="actions">
                 <button className="edit">edit</button>
                 <button className="delete">delete</button>
             </div>
-        </div>
+        </div> as ITaskComponent
     );
 }
 
