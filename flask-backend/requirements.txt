@@ -2,3 +2,5 @@ flask
 bson
 pymongo
 openai
+bcrypt
+
