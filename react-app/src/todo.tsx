@@ -1,6 +1,39 @@
 import React, {useState} from 'react';
-import './todo.css';
+import styled, {createGlobalStyle} from 'styled-components'
 
+
+const Global = createGlobalStyle`
+* {
+margin: 0;
+box-sizing: border-box;
+
+--dark: rgb(36, 139, 157);
+--darker: #3a7c84;
+--darkest: #1f484d;
+--grey: #b3bed3;
+--pink: #ffffff;
+--purple: #ffffff;
+--light: #EEE;
+}
+`
+
+const StyleInput = styled.input`
+appearance: none;
+border: none;
+outline: none;
+background: none;
+`
+
+const StyleButton = styled.button`
+appearance: none;
+border: none;
+outline: none;
+background: none;
+`
+
+const AppWrapper = styled.div`
+
+`
 
 const TodoApp = () => {
     const [tasksList, setTasksList] = useState<JSX.Element[]>([]);
@@ -13,37 +46,78 @@ const TodoApp = () => {
     }
 
     const deleteTask = (task: JSX.Element) => {
-
     }
 
     const editTast = (task: JSX.Element) => {
-
     }
 
     return (
-        <div className="todo_app">
-            <TaskManageBar
-                addTask={addTask}/>
-            <TaskList
-                tasksList={tasksList}/>
-        </div>
+        <>
+            <Global/>
+                <AppWrapper>
+                            <TaskManageBar addTask={addTask}/>
+                            <TaskList tasksList={tasksList}/>
+                </AppWrapper>
+        </>
     );
 }
 
+const StyleTaskManageBar = styled.div`
+display: flex;
+padding: 2rem 10rem;
+width: 100%;
+margin: 1rem 0;
+justify-content: space-between;
+`
 
 interface IAddTask {
     addTask: (task: JSX.Element) => void
 }
+
 const TaskManageBar = ({addTask}: {addTask: (task: JSX.Element) => void}) => {
     return (
-        <div className="task_manage_bar">
-            <TaskSearchForm/>
-            <TaskAddForm
-                addTask={addTask}/>
-        </div>
+        <StyleTaskManageBar>
+                <TaskSearchForm/>
+                <TaskAddForm addTask={addTask}/>
+        </StyleTaskManageBar>
     );
 }
 
+const StyleTaskAddForm = styled.form`
+display: flex;
+padding: 0 4rem;
+`
+
+const StyleTaskAddFormName = styled(StyleInput)`
+flex: 1 1 0;
+background-color: var(--darker);
+padding: 1rem;
+border-radius: 1rem;
+margin-right: 1rem;
+color: var(--light);
+font-size: 1.25rem;
+`
+
+const StyleTaskAddFormDescription = styled(StyleInput)`
+flex: 1 1 0;
+background-color: var(--darker);
+padding: 1rem;
+border-radius: 1rem;
+margin-right: 1rem;
+color: var(--light);
+font-size: 1.25rem;
+`
+
+const StyleTaskAddFormSubmit = styled(StyleButton)`
+color: var(--pink);
+font-size: 1.25rem;
+font-weight: 700;
+background-image: linear-gradient(to right, var(--pink), var(--purple));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+cursor: pointer;
+transition: 0.4s;
+`
 
 const TaskAddForm = ({addTask}: IAddTask) => {
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -58,74 +132,135 @@ const TaskAddForm = ({addTask}: IAddTask) => {
             <TaskListEntry
                 initTaskName={target.taskName.value}
                 initTaskDescription={target.taskDescription.value}
-                initTaskID="TASKID"/>
+                initTaskID="TaskID"/>
         )
     }
 
     return (
-        <form className="task_add_form" onSubmit={handleSubmit}>
-            <input type="text" name="taskName" className="task_add_form_name" placeholder="Name"/>
-            <input type="text" name="taskDescription" className="task_add_form_description" placeholder="Description"/>
-            <input type="submit" className="task_add_form_submit" value="Add"/>
-        </form>
+        <StyleTaskAddForm>
+                <StyleTaskAddFormName/>
+                <StyleTaskAddFormDescription/>
+                <StyleTaskAddFormSubmit>
+                    Add
+                </StyleTaskAddFormSubmit>
+        </StyleTaskAddForm>
     );
 }
 
+const StyleTaskSearchForm = styled.form`
+margin: 0 4rem;
+`
+
+const StyleTaskSearchFromInput = styled(StyleInput)`
+flex: 1 1 0;
+background-color: var(--darker);
+padding: 1rem;
+border-radius: 1rem;
+margin-right: 1rem;
+color: var(--light);
+font-size: 1.25rem;
+`
+
+const StyleTaskSearchFormSubmit = styled(StyleButton)`
+color: var(--pink);
+font-size: 1.25rem;
+font-weight: 700;
+background-image: linear-gradient(to right, var(--pink), var(--purple));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+cursor: pointer;
+transition: 0.4s;
+`
 
 const TaskSearchForm = () => {
     return (
-        <form className="task_search_form actions">
-            <input type="text" className="task_search_form_input" placeholder="..."/>
-            <input type="submit" className="task_search_form_submit" value="Search"/>
-        </form>
+        <StyleTaskSearchForm>
+            <StyleTaskSearchFromInput/>
+            <StyleTaskSearchFormSubmit>
+                search
+            </StyleTaskSearchFormSubmit>
+        </StyleTaskSearchForm>
     );
 }
 
+const StyleTaskList = styled.div`
+`
+
+const StyleTaskListHeader = styled.div`
+display: flex;
+justify-content: space-between;
+`
+
+const StyleTaskListBody = styled.div`
+
+`
 
 interface ITasksArr {
     tasksList: JSX.Element[]
 }
+
 const TaskList = ({tasksList}: ITasksArr) => {
     console.log(tasksList[0]);
     return (
-        <div className="task_list">
-            <div className="task_list_header">
-                <h2>Name</h2>
-                <h2>Description</h2>
-                <h2>Difficulty</h2>
-                <h2>Gems</h2>
-            </div>
-
-            <div className="task_list_body">
+        <StyleTaskList>
+            <StyleTaskListHeader>
+                    <h2>Name</h2>
+                    <h2>Description</h2>
+                    <h2>Difficulty</h2>
+                    <h2>Gems</h2>
+            </StyleTaskListHeader>
+            <StyleTaskListBody>
                 {tasksList}
-            </div>
-        </div>
+            </StyleTaskListBody>
+        </StyleTaskList>
     );
 }
 
+const StyleTaskListElemen = styled.div`
+
+`
+
+const StyleContent = styled.div`
+
+`
+
+const StyleEdit = styled(StyleButton)`
+background-image: linear-gradient(to right, var(--pink), var(--purple));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+`
+
+const StyleDelete = styled(StyleButton)`
+color: rgb(162, 8, 38);
+`
 
 interface ITaskListElement {
     initTaskName: string,
     initTaskDescription: string,
     initTaskID: string
 }
+
 const TaskListEntry = ({initTaskName, initTaskDescription, initTaskID}: ITaskListElement) => {
     const [taskID, setTaskID] = useState(initTaskID);
     const [taskName, setTaskName] = useState(initTaskName);
     const [taskDescription, setTaskDescription] = useState(initTaskDescription);
 
     return (
-        <div className="task_list_element">
-            <div className="content">
-                <input type="text" className="text" value={taskID} readOnly/>
-                <input type="text" className="text" value={taskName} readOnly/>
-                <input type="text" className="text" value={taskDescription} readOnly/>
-            </div>
-            <div className="actions">
-                <button className="edit">edit</button>
-                <button className="delete">delete</button>
-            </div>
-        </div>
+        <StyleTaskListElemen>
+                <StyleContent>
+                    {taskID}
+                    {taskName}
+                    {taskDescription}
+                    {taskDescription}
+                    {taskDescription}
+                    <StyleEdit>
+                        edit
+                    </StyleEdit>
+                    <StyleDelete>
+                        delete
+                    </StyleDelete>
+                </StyleContent>
+        </StyleTaskListElemen>
     );
 }
 
