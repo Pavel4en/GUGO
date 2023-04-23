@@ -374,18 +374,69 @@ def exc_handler(route_func):
 
 
 # Создать нового пользователя и создать ему пета с именем pet_name
-@app.route("/gameapi/create_player/<pet_name>")
+#
+# INPUT:
+# {
+#     "pet_name": "danuil"
+# }
+#
+# OUTPUT:
+# {
+#   "data": {
+#     "_id": "6443be64eadf49c6182b9f9f",
+#     "gems": 0,
+#     "inventory": [],
+#     "pet": {
+#       "hunger": 99.9879524564743,
+#       "hunger_per_sec": 0.01,
+#       "last_update_unixtime": 1682161253.7386696,
+#       "name": "danuil",
+#       "worn_things_ids": []
+#     }
+#   },
+#   "description": "",
+#   "status": "ok"
+# }
+@app.route("/gameapi/create_player", methods=['POST'])
 @exc_handler
-def create_player(pet_name):
+def create_player():
+    # Получаем словарь из json строки из запроса
+    request_data = request.get_json()
+
+    pet_name = str(request_data['pet_name'])
+
     player = Player.create_user(pet_name)
     player.save()
     return GameResponse("ok", "", player.to_dict()).to_dict()
 
 
 # Получить данные об игроке
-@app.route("/gameapi/<player_id>/get_player_data")
+#
+# INPUT:
+# {
+#     "player_id": "6443be64eadf49c6182b9f9f"
+# }
+#
+# OUTPUT:
+# {
+#   "data": {
+#       "hunger": 99.9879524564743,
+#       "hunger_per_sec": 0.01,
+#       "last_update_unixtime": 1682161253.7386696,
+#       "name": "danuil",
+#       "worn_things_ids": []
+#   },
+#   "description": "",
+#   "status": "ok"
+# }
+@app.route("/gameapi/get_player_data", methods=['POST'])
 @exc_handler
-def get_player_data(player_id):
+def get_player_data():
+    # Получаем словарь из json строки из запроса
+    request_data = request.get_json()
+
+    player_id = str(request_data['player_id'])
+
     player = Player(player_id)
     pet = player.pet
     pet.update_pet_state()
@@ -394,9 +445,37 @@ def get_player_data(player_id):
 
 
 # Получить данные о питомце
-@app.route("/gameapi/<player_id>/get_pet_data")
+#
+# INPUT:
+# {
+#     "player_id": "6443be64eadf49c6182b9f9f"
+# }
+#
+# OUTPUT:
+# {
+#   "data": {
+#     "_id": "6443be64eadf49c6182b9f9f",
+#     "gems": 0,
+#     "inventory": [],
+#     "pet": {
+#       "hunger": 99.9879524564743,
+#       "hunger_per_sec": 0.01,
+#       "last_update_unixtime": 1682161253.7386696,
+#       "name": "danuil",
+#       "worn_things_ids": []
+#     }
+#   },
+#   "description": "",
+#   "status": "ok"
+# }
+@app.route("/gameapi/get_pet_data", methods=['POST'])
 @exc_handler
-def get_pet_data(player_id):
+def get_pet_data():
+    # Получаем словарь из json строки из запроса
+    request_data = request.get_json()
+
+    player_id = str(request_data['player_id'])
+
     player = Player(player_id)
     pet = player.pet
     pet.update_pet_state()
@@ -405,7 +484,33 @@ def get_pet_data(player_id):
 
 
 # Получить список всей существующей еды в игре
-@app.route("/gameapi/get_all_game_food")
+#
+# INPUT:
+# -
+#
+# OUTPUT:
+# {
+#     "data": [
+#          {
+#               "_id": "64434100dfe82f69e76fe87e",
+#               "name": "bulochka s koricey",
+#               "price": 100,
+#               "satiety": "60"
+#          },
+#
+#          ...
+#
+#          {
+#               "_id": "64434153dfe82f69e76fe87f",
+#               "name": "komplexniy obed v stolovoy b korpusa",
+#               "price": 700,
+#               "satiety": "300"
+#          }
+#     ],
+#     "status": "ok",
+#     "desc": ""
+# }
+@app.route("/gameapi/get_all_game_food", methods=['POST'])
 @exc_handler
 def get_all_game_food():
     gf = GameFood()
@@ -413,7 +518,28 @@ def get_all_game_food():
 
 
 # Получить список всех существующих вещей в игре
-@app.route("/gameapi/get_all_game_items")
+#
+# INPUT:
+# -
+#
+# OUTPUT:
+# {
+#     "data": [
+#         {
+#             "_id": "644382cedfe82f69e76fe880",
+#             "name": "boots",
+#             "price": 200
+#         },
+#         {
+#             "_id": "644382cedfe82f69e76fe882",
+#             "name": "shtani",
+#             "price": 700
+#         }
+#     ],
+#     "status": "ok",
+#     "desc": ""
+# }
+@app.route("/gameapi/get_all_game_items", methods=['POST'])
 @exc_handler
 def get_all_game_items():
     gi = GameItems()
@@ -421,9 +547,28 @@ def get_all_game_items():
 
 
 # Покормить питомца
-@app.route("/gameapi/<player_id>/feed_pet/<food_id>")
+#
+# INPUT:
+# {
+#     "player_id": "6443be64eadf49c6182b9f9f",
+#     "food_id": "6443be64eadf49c6182b9f9a"
+# }
+#
+# OUTPUT:
+# {
+#     "data": {}
+#     "status": "ok"
+#     "desc": ""
+# }
+@app.route("/gameapi/feed_pet", methods=['POST'])
 @exc_handler
-def feed_pet(player_id, food_id):
+def feed_pet():
+    # Получаем словарь из json строки из запроса
+    request_data = request.get_json()
+
+    player_id = str(request_data['player_id'])
+    food_id = str(request_data['food_id'])
+
     player = Player(player_id)
     pet = player.pet
     gf = GameFood()
@@ -437,9 +582,28 @@ def feed_pet(player_id, food_id):
 
 
 # Купить вещь, если достаточно денег
-@app.route("/gameapi/<player_id>/buy_item/<item_id>")
+#
+# INPUT:
+# {
+#     "player_id": "6443be64eadf49c6182b9f9f",
+#     "item_id": "6443be64eadf49c6182b9f9a"
+# }
+#
+# OUTPUT:
+# {
+#     "data": {}
+#     "status": "ok"
+#     "desc": ""
+# }
+@app.route("/gameapi/buy_item", methods=['POST'])
 @exc_handler
-def buy_item(player_id, item_id):
+def buy_item():
+    # Получаем словарь из json строки из запроса
+    request_data = request.get_json()
+
+    player_id = str(request_data['player_id'])
+    item_id = str(request_data['item_id'])
+
     player = Player(player_id)
     gi = GameItems()
     player_inventory = player.inventory
@@ -453,9 +617,28 @@ def buy_item(player_id, item_id):
 
 
 # Надеть вещь на питомца
-@app.route("/gameapi/<player_id>/wear_item/<item_id>")
+#
+# INPUT:
+# {
+#     "player_id": "6443be64eadf49c6182b9f9f",
+#     "item_id": "6443be64eadf49c6182b9f9a"
+# }
+#
+# OUTPUT:
+# {
+#     "data": {}
+#     "status": "ok"
+#     "desc": ""
+# }
+@app.route("/gameapi/wear_item", methods=['POST'])
 @exc_handler
-def wear_item(player_id, item_id):
+def wear_item():
+    # Получаем словарь из json строки из запроса
+    request_data = request.get_json()
+
+    player_id = str(request_data['player_id'])
+    item_id = str(request_data['item_id'])
+
     player = Player(player_id)
     player_inventory = player.inventory
     pet = player.pet
@@ -468,9 +651,28 @@ def wear_item(player_id, item_id):
 
 
 # Снять вещь с питомца
-@app.route("/gameapi/<player_id>/take_off_item/<item_id>")
+#
+# INPUT:
+# {
+#     "player_id": "6443be64eadf49c6182b9f9f",
+#     "item_id": "6443be64eadf49c6182b9f9a"
+# }
+#
+# OUTPUT:
+# {
+#     "data": {},
+#     "status": "ok",
+#     "desc": ""
+# }
+@app.route("/gameapi/take_off_item", methods=['POST'])
 @exc_handler
-def take_off_item(player_id, item_id):
+def take_off_item():
+    # Получаем словарь из json строки из запроса
+    request_data = request.get_json()
+
+    player_id = str(request_data['player_id'])
+    item_id = str(request_data['item_id'])
+
     player = Player(player_id)
     pet = player.pet
     if pet.worn_things.has_item(item_id):
@@ -482,9 +684,28 @@ def take_off_item(player_id, item_id):
 
 
 # Начислить gem_count гемов игроку
-@app.route("/gameapi/<player_id>/give_gem/<gem_count>")
+#
+# INPUT:
+# {
+#     "player_id": "6443be64eadf49c6182b9f9f",
+#     "gem_count": 100
+# }
+#
+# OUTPUT:
+# {
+#     "data": {},
+#     "status": "ok",
+#     "desc": ""
+# }
+@app.route("/gameapi/give_gem", methods=['POST'])
 @exc_handler
-def give_gems(player_id, gem_count):
+def give_gems():
+    # Получаем словарь из json строки из запроса
+    request_data = request.get_json()
+
+    player_id = str(request_data['player_id'])
+    gem_count = int(request_data['gem_count'])
+
     player = Player(player_id)
     player.gems += int(gem_count)
     player.save()
@@ -569,13 +790,23 @@ def index():
     return render_template('index.html', tasks=tasks.find())
 
 
+# Создать задание
+#
+# INPUT:
+# {
+#     "task_name": "name",
+#     "task_description": "desc"
+# }
+#
+# OUTPUT:
+# Статусный код
 @app.route('/add_task', methods=['POST'])
 def add_task():
     # Получаем словарь из json строки из запроса
     request_data = request.get_json()
 
-    task_name = request_data['task_name']
-    task_description = request_data['task_description']
+    task_name = str(request_data['task_name'])
+    task_description = str(request_data['task_description'])
 
     task = Task.create_new_task(task_name, task_description)
     tasks.insert_one(task.to_dict())
@@ -583,13 +814,25 @@ def add_task():
     return make_response("", 200)
 
 
-@app.route('/edit_task/<task_id>', methods=['POST'])
-def edit_task(task_id):
+# Изменить задание по task_id
+#
+# INPUT:
+# {
+#     "task_id": "6443be64eadf49c6182b9f9f",
+#     "task_name": "name",
+#     "task_description": "desc"
+# }
+#
+# OUTPUT:
+# Статусный код
+@app.route('/edit_task', methods=['POST'])
+def edit_task():
     # Получаем словарь из json строки из запроса
     request_data = request.get_json()
 
-    task_name = request_data['task_name']
-    task_description = request_data['task_description']
+    task_id = str(request_data['task_id'])
+    task_name = str(request_data['task_name'])
+    task_description = str(request_data['task_description'])
 
     task = Task.create_new_task(task_name, task_description)
     tasks.update_one({'_id': ObjectId(task_id)}, {'$set': task.to_dict()})
@@ -597,15 +840,41 @@ def edit_task(task_id):
     return make_response("", 200)
 
 
-@app.route('/delete_task/<task_id>', methods=['POST'])
-def delete_task(task_id):
+# Удалить задание по task_id
+#
+# INPUT:
+# {
+#     "task_id": "6443be64eadf49c6182b9f9f"
+# }
+#
+# OUTPUT:
+# Статусный код
+@app.route('/delete_task', methods=['POST'])
+def delete_task():
+    # Получаем словарь из json строки из запроса
+    request_data = request.get_json()
+    task_id = str(request_data["task_id"])
+
     # Удаляем задачу из коллекции
     tasks.delete_one({'_id': ObjectId(task_id)})
     return make_response("", 200)
 
 
-@app.route('/complete_task/<task_id>', methods=['POST'])
-def complete_task(task_id):
+# Отметить задание task_id выполненным
+#
+# INPUT:
+# {
+#     "task_id": "6443be64eadf49c6182b9f9f"
+# }
+#
+# OUTPUT:
+# Статусный код
+@app.route('/complete_task', methods=['POST'])
+def complete_task():
+    # Получаем словарь из json строки из запроса
+    request_data = request.get_json()
+    task_id = str(request_data["task_id"])
+
     # Получаем задачу по ее id
     task = tasks.find_one({'_id': ObjectId(task_id)})
     # Обновляем статус задачи
@@ -617,7 +886,23 @@ def complete_task(task_id):
     return make_response("", 200)
 
 
-@app.route('/completed_tasks/')
+# Вернуть ВСЕ выполненные задания
+#
+# INPUT:
+# -
+#
+# OUTPUT:
+# [
+#     {
+#         "_id": "643ff04367a2c94c902852e5",
+#         "coins": 500,
+#         "completed": false,
+#         "description": "",
+#         "difficulty": 4,
+#         "name": "Купить хлеб в другом городе"
+#     }
+# ]
+@app.route('/completed_tasks', methods=['POST'])
 def get_completed_tasks():
     completed_tasks_list = []
     for complete_task in archive_tasks.find():
@@ -626,7 +911,31 @@ def get_completed_tasks():
     return completed_tasks_list
 
 
-@app.route('/uncompleted_tasks')
+# Вернуть ВСЕ невыполненные задания
+#
+# INPUT:
+# -
+#
+# OUTPUT:
+# [
+#     {
+#         "_id": "6441f63d1b2033ac84d4ae52",
+#         "coins": 50,
+#         "completed": false,
+#         "description": "",
+#         "difficulty": 1,
+#         "name": "сходить в туалет"
+#     },
+#     {
+#         "_id": "6441f6a61b2033ac84d4ae53",
+#         "coins": 500,
+#         "completed": false,
+#         "description": "",
+#         "difficulty": 4,
+#         "name": "проехать на машине 1000 км"
+#     },
+# ]
+@app.route('/uncompleted_tasks', methods=['POST'])
 def get_uncompleted_tasks():
     uncompleted_tasks_list = []
     for incomplete_task in tasks.find():
