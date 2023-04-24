@@ -18,8 +18,8 @@ interface ITaskComponentArr {
     taskComponentArr: ITaskComponent[]
 }
 
-interface IAddTask {
-    addTask: (task: { name: string, description: string }) => void
+interface ITaskComponentDict {
+    [id: string]: ITaskComponent
 }
 
 
@@ -34,54 +34,76 @@ const JSONFromURL = async <TResponse, >(url: string, config: RequestInit = {}): 
 }
 
 
-const parseTasksFromURL = (url: string): Promise<ITaskComponent[]> => {
+const parseTasksFromURL = (url: string): Promise<ITask[]> => {
     return JSONFromURL<ITask[]>(url,
         {
             method: 'POST',
             headers: {'Content-Type': 'application/json'}
         })
-        .then((data: ITask[]): ITaskComponent[] => data.map(
-                (task: ITask): ITaskComponent =>
-                    <TaskListEntry {...task}/>
-            )
-        );
 }
-const getCompletedTasks = (): Promise<ITaskComponent[]> => {
+const getCompletedTasks = () => {
     return parseTasksFromURL('http://localhost:5000/completed_tasks/')
 }
 
-const getIncompleteTasks = (): Promise<ITaskComponent[]> => {
+const getIncompleteTasks = () => {
     return parseTasksFromURL('http://localhost:5000/uncompleted_tasks');
 }
 
 
 const TodoApp = () => {
-    const [taskComponentArr, setTaskComponentArr] = useState<ITaskComponent[]>([]);
+    const [taskComponentDict, setTaskComponentDict]
+        = useState<{ [id: string]: ITaskComponent }>({});
 
     const updateTasksFromDB = () => {
-        getIncompleteTasks().then((tasks) => setTaskComponentArr(tasks))
+        getIncompleteTasks()
+            .then((tasks) => {
+                let newTasksComponentDict: ITaskComponentDict = {};
+
+                tasks.forEach((task: ITask) => {
+                    newTasksComponentDict[task._id] =
+                        <TaskListEntry
+                            {...task}
+                            deleteTask={deleteTask}/>
+                })
+
+                setTaskComponentDict(newTasksComponentDict);
+            })
+        // TODO: exceptions
     }
 
-    const addTask = (task: { name: string, description: string }) => {
+    const addTask = (name: string, description: string) => {
         const requestOption = {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                name: task.name,
-                description: task.description
+                name: name,
+                description: description
             })
         }
 
         fetch('http://localhost:5000/add_task', requestOption)
             .then(updateTasksFromDB)
-            .catch((e) => {
-                throw Error(e);
-                // TODO: exceptions
-            });
     }
 
-    const deleteTask = (task: ITaskComponent) => {
-        // TODO
+    const deleteTask = (taskID: string ) => {
+        let newDict: ITaskComponentDict = {};
+        Object.keys(taskComponentDict).forEach((iterTaskID: string) => {
+            if (iterTaskID != taskID)
+                newDict[iterTaskID] = taskComponentDict[taskID];
+        });
+
+        setTaskComponentDict(newDict);
+
+        const requestOption = {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                _id: taskID
+            })
+        }
+
+        fetch('http://localhost:5000/delete_task', requestOption)
+            .then(updateTasksFromDB)
     }
 
     const editTask = (task: ITaskComponent) => {
@@ -97,13 +119,15 @@ const TodoApp = () => {
         <div className="todo_app">
             <TaskManageBar
                 addTask={addTask}/>
-            <TaskList
-                taskComponentArr={taskComponentArr}/>
+            <TaskList taskComponentDict={taskComponentDict}/>
         </div>
     );
 }
 
-const TaskManageBar = ({addTask}: IAddTask) => {
+const TaskManageBar = (
+    {addTask}: {
+        addTask: (taskName: string, taskDescription: string) => void,
+    }) => {
     return (
         <div className="task_manage_bar">
             <TaskSearchForm/>
@@ -114,7 +138,10 @@ const TaskManageBar = ({addTask}: IAddTask) => {
 }
 
 
-const TaskAddForm = ({addTask}: IAddTask) => {
+const TaskAddForm = (
+    {addTask}: {
+        addTask: (taskName: string, taskDescription: string) => void
+    }) => {
     function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
@@ -123,10 +150,10 @@ const TaskAddForm = ({addTask}: IAddTask) => {
             taskDescription: { value: string }
         };
 
-        addTask({
-            name: target.taskName.value,
-            description: target.taskDescription.value
-        })
+        addTask(
+            target.taskName.value,
+            target.taskDescription.value
+        )
     }
 
     return (
@@ -149,7 +176,7 @@ const TaskSearchForm = () => {
 }
 
 
-const TaskList = ({taskComponentArr}: ITaskComponentArr) => {
+const TaskList = ({taskComponentDict}: { taskComponentDict: ITaskComponentDict }) => {
     return (
         <div className="task_list">
             <div className="task_list_header">
@@ -160,14 +187,16 @@ const TaskList = ({taskComponentArr}: ITaskComponentArr) => {
             </div>
 
             <div className="task_list_body">
-                {taskComponentArr}
+                {Object.values(taskComponentDict)}
             </div>
         </div>
     );
 }
 
 
-const TaskListEntry = ({_id, coins, completed, description, name, difficulty}: ITask) => {
+var TaskListEntry = ({_id, coins, completed, description, name, difficulty, deleteTask}:
+                         ITask & { deleteTask: (taskID: string) => void }
+) => {
     const taskID = _id;
 
     const [taskDifficulty, setTaskDifficulty] = useState(difficulty)
@@ -176,7 +205,11 @@ const TaskListEntry = ({_id, coins, completed, description, name, difficulty}: I
     const [taskName, setTaskName] = useState(name);
     const [taskDescription, setTaskDescription] = useState(description);
 
+    const handleDelete = async (event: React.FormEvent<HTMLButtonElement>) => {
+        event.preventDefault();
 
+        await deleteTask(taskID)
+    }
     return (
         <div className="task_list_element">
             <div className="content">
@@ -187,11 +220,10 @@ const TaskListEntry = ({_id, coins, completed, description, name, difficulty}: I
             </div>
             <div className="actions">
                 <button className="edit">edit</button>
-                <button className="delete">delete</button>
+                <button className="delete" onClick={handleDelete}>delete</button>
             </div>
         </div> as ITaskComponent
     );
 }
-
 
 export default TodoApp;
