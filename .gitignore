@@ -128,6 +128,14 @@ flask-backend/venv/
 flask-backend/ENV/
 flask-backend/env.bak/
 flask-backend/venv.bak/
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
 
 # Spyder project settings
 flask-backend/.spyderproject
@@ -159,6 +167,8 @@ flask-backend/cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
+
+.vscode/
 
 # dependencies
 react-app/node_modules
