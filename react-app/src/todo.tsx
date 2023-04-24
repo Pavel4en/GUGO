@@ -6,14 +6,17 @@ const Global = createGlobalStyle`
 * {
 margin: 0;
 box-sizing: border-box;
+transition: .0.8s ease-in-out;
 
---dark: rgb(36, 139, 157);
---darker: #3a7c84;
---darkest: #1f484d;
---grey: #b3bed3;
---pink: #ffffff;
---purple: #ffffff;
---light: #EEE;
+--dark: #20B2AA;
+--darker: #008B8B;
+--darkest: #008080;
+--grey: #AFEEEE;
+--pink: #7FFFD4;
+--purple: #FFA07A;
+--light: #E0FFFF;
+
+background-color: #6A5ACD
 }
 `
 
@@ -32,7 +35,10 @@ background: none;
 `
 
 const AppWrapper = styled.div`
-
+margin: 0 auto;
+width: 100%;
+max-width: 960px;
+// padding: 0 15px;
 `
 
 const TodoApp = () => {
@@ -55,19 +61,19 @@ const TodoApp = () => {
         <>
             <Global/>
                 <AppWrapper>
-                            <TaskManageBar addTask={addTask}/>
-                            <TaskList tasksList={tasksList}/>
+                    <TaskManageBar addTask={addTask}/>
+                    <TaskList tasksList={tasksList}/>
                 </AppWrapper>
         </>
     );
 }
 
 const StyleTaskManageBar = styled.div`
-display: flex;
-padding: 2rem 10rem;
+// display: flex;
+padding: 5rem;
 width: 100%;
-margin: 1rem 0;
-justify-content: space-between;
+margin-bottom: 5rem;
+
 `
 
 interface IAddTask {
@@ -85,7 +91,6 @@ const TaskManageBar = ({addTask}: {addTask: (task: JSX.Element) => void}) => {
 
 const StyleTaskAddForm = styled.form`
 display: flex;
-padding: 0 4rem;
 `
 
 const StyleTaskAddFormName = styled(StyleInput)`
@@ -117,6 +122,7 @@ background-image: linear-gradient(to right, var(--pink), var(--purple));
 -webkit-text-fill-color: transparent;
 cursor: pointer;
 transition: 0.4s;
+
 `
 
 const TaskAddForm = ({addTask}: IAddTask) => {
@@ -137,35 +143,34 @@ const TaskAddForm = ({addTask}: IAddTask) => {
     }
 
     return (
-        <StyleTaskAddForm>
-                <StyleTaskAddFormName/>
-                <StyleTaskAddFormDescription/>
-                <StyleTaskAddFormSubmit>
-                    Add
-                </StyleTaskAddFormSubmit>
+        <StyleTaskAddForm onSubmit={handleSubmit}>
+                <StyleTaskAddFormName name='taskName'/>
+                <StyleTaskAddFormDescription name='taskDescription'/>
+                <StyleTaskAddFormSubmit> Add </StyleTaskAddFormSubmit>
         </StyleTaskAddForm>
     );
 }
 
 const StyleTaskSearchForm = styled.form`
-margin: 0 4rem;
+justify-content: center;
+display: flex;
+margin-bottom: 2rem;
 `
 
 const StyleTaskSearchFromInput = styled(StyleInput)`
-flex: 1 1 0;
 background-color: var(--darker);
-padding: 1rem;
-border-radius: 1rem;
-margin-right: 1rem;
 color: var(--light);
+border-radius: 1rem;
 font-size: 1.25rem;
+padding: 1rem;
+margin-right: 1rem;
 `
 
 const StyleTaskSearchFormSubmit = styled(StyleButton)`
+background-image: linear-gradient(to right, var(--pink), var(--purple));
 color: var(--pink);
 font-size: 1.25rem;
 font-weight: 700;
-background-image: linear-gradient(to right, var(--pink), var(--purple));
 -webkit-background-clip: text;
 -webkit-text-fill-color: transparent;
 cursor: pointer;
@@ -176,23 +181,33 @@ const TaskSearchForm = () => {
     return (
         <StyleTaskSearchForm>
             <StyleTaskSearchFromInput/>
-            <StyleTaskSearchFormSubmit>
-                search
-            </StyleTaskSearchFormSubmit>
+            <StyleTaskSearchFormSubmit> Search </StyleTaskSearchFormSubmit>
         </StyleTaskSearchForm>
     );
 }
 
+
+
+
+
 const StyleTaskList = styled.div`
+max-height: 100%;
+display: table;
+width: 100%;
 `
 
 const StyleTaskListHeader = styled.div`
 display: flex;
 justify-content: space-between;
+color: var(--light);
 `
 
-const StyleTaskListBody = styled.div`
+const StyleTableCell = styled.div`
+display: table-cell;
+`
 
+
+const StyleTaskListBody = styled.div`
 `
 
 interface ITasksArr {
@@ -204,19 +219,22 @@ const TaskList = ({tasksList}: ITasksArr) => {
     return (
         <StyleTaskList>
             <StyleTaskListHeader>
-                    <h2>Name</h2>
-                    <h2>Description</h2>
-                    <h2>Difficulty</h2>
-                    <h2>Gems</h2>
+                    <StyleTableCell/>
+                    <StyleTableCell>Name</StyleTableCell>
+                    <StyleTableCell>Description</StyleTableCell>
+                    <StyleTableCell>Difficulty</StyleTableCell>
+                    <StyleTableCell>Gems</StyleTableCell>
+                    <StyleTableCell/>
+                    <StyleTableCell/>
             </StyleTaskListHeader>
-            <StyleTaskListBody>
-                {tasksList}
-            </StyleTaskListBody>
+            <StyleTaskListBody> {tasksList} </StyleTaskListBody>
         </StyleTaskList>
     );
 }
 
-const StyleTaskListElemen = styled.div`
+const StyleTaskListElement = styled.div`
+// font-size: 2rem;
+
 
 `
 
@@ -225,13 +243,15 @@ const StyleContent = styled.div`
 `
 
 const StyleEdit = styled(StyleButton)`
-background-image: linear-gradient(to right, var(--pink), var(--purple));
--webkit-background-clip: text;
--webkit-text-fill-color: transparent;
+color: white;
 `
 
 const StyleDelete = styled(StyleButton)`
-color: rgb(162, 8, 38);
+color: white;
+`
+
+const StyleAction = styled.div`
+
 `
 
 interface ITaskListElement {
@@ -246,21 +266,17 @@ const TaskListEntry = ({initTaskName, initTaskDescription, initTaskID}: ITaskLis
     const [taskDescription, setTaskDescription] = useState(initTaskDescription);
 
     return (
-        <StyleTaskListElemen>
+        <StyleTaskListElement>
                 <StyleContent>
-                    {taskID}
-                    {taskName}
-                    {taskDescription}
-                    {taskDescription}
-                    {taskDescription}
-                    <StyleEdit>
-                        edit
-                    </StyleEdit>
-                    <StyleDelete>
-                        delete
-                    </StyleDelete>
+                    <input type="text" className="text" value={taskID} readOnly/>
+                    <input type="text" className="text" value={taskName} readOnly/>
+                    <input type="text" className="text" value={taskDescription} readOnly/>
+                    <input type="text" className="text" value='3' readOnly/>
+                    <input type="text" className="text" value='500' readOnly/>
+                    <StyleEdit> edit </StyleEdit>
+                    <StyleDelete> delete </StyleDelete>
                 </StyleContent>
-        </StyleTaskListElemen>
+        </StyleTaskListElement>
     );
 }
 
