@@ -1,5 +1,5 @@
 import React, {Fragment, useEffect, useState} from 'react';
-import styled, {createGlobalStyle} from 'styled-components'
+import styled, {createGlobalStyle} from 'styled-components';
 
 
 interface ITask {
@@ -10,6 +10,22 @@ interface ITask {
     difficulty: number,
     name: string
 }
+
+interface ITaskComponent extends JSX.Element {
+}
+
+interface ITaskComponentArr {
+    taskComponentArr: ITaskComponent[]
+}
+
+interface ITaskComponentDict {
+    [id: string]: ITaskComponent
+}
+
+interface IAddTask {
+    addTask: (task: JSX.Element) => void
+}
+
 const Global = createGlobalStyle`
   * {
     margin: 0;
@@ -28,22 +44,14 @@ const Global = createGlobalStyle`
   }
 `
 
-const StyleInput = styled.input`
+const StyledInput = styled.input`
   appearance: none;
   border: none;
   outline: none;
   background: none;
 `
-interface ITaskComponent extends JSX.Element {
-}
-interface ITaskComponentArr {
-    taskComponentArr: ITaskComponent[]
-}
 
-interface ITaskComponentDict {
-    [id: string]: ITaskComponent
-}
-const StyleButton = styled.button`
+const StyledButton = styled.button`
   appearance: none;
   border: none;
   outline: none;
@@ -66,7 +74,6 @@ const JSONFromURL = async <TResponse, >(url: string, config: RequestInit = {}): 
         throw Error;
     }
 }
-
 
 const parseTasksFromURL = (url: string): Promise<ITask[]> => {
     return JSONFromURL<ITask[]>(url,
@@ -119,7 +126,7 @@ const TodoApp = () => {
             .then(updateTasksFromDB)
     }
 
-    const deleteTask = (taskID: string ) => {
+    const deleteTask = (taskID: string) => {
         let newDict: ITaskComponentDict = {};
         Object.keys(taskComponentDict).forEach((iterTaskID: string) => {
             if (iterTaskID != taskID)
@@ -154,40 +161,37 @@ const TodoApp = () => {
             <Global/>
             <AppWrapper>
                 <TaskManageBar addTask={addTask}/>
-                <TaskList taskCompomentDict={taskComponentDict}/>
+                <TaskList taskComponentDict={taskComponentDict}/>
             </AppWrapper>
         </>
     );
 }
 
-const StyleTaskManageBar = styled.div`
+const StyledTaskManageBar = styled.div`
   // display: flex;
   padding: 5rem;
   width: 100%;
   margin-bottom: 5rem;
-
 `
 
-interface IAddTask {
-    addTask: (task: JSX.Element) => void
-}
+
 const TaskManageBar = (
     {addTask}: {
         addTask: (taskName: string, taskDescription: string) => void,
     }) => {
     return (
-        <StyleTaskManageBar>
+        <StyledTaskManageBar>
             <TaskSearchForm/>
             <TaskAddForm addTask={addTask}/>
-        </StyleTaskManageBar>
+        </StyledTaskManageBar>
     );
 }
 
-const StyleTaskAddForm = styled.form`
+const StyledTaskAddForm = styled.form`
   display: flex;
 `
 
-const StyleTaskAddFormName = styled(StyleInput)`
+const StyledTaskAddFormName = styled(StyledInput)`
   flex: 1 1 0;
   background-color: var(--darker);
   padding: 1rem;
@@ -197,7 +201,7 @@ const StyleTaskAddFormName = styled(StyleInput)`
   font-size: 1.25rem;
 `
 
-const StyleTaskAddFormDescription = styled(StyleInput)`
+const StyledTaskAddFormDescription = styled(StyledInput)`
   flex: 1 1 0;
   background-color: var(--darker);
   padding: 1rem;
@@ -207,7 +211,7 @@ const StyleTaskAddFormDescription = styled(StyleInput)`
   font-size: 1.25rem;
 `
 
-const StyleTaskAddFormSubmit = styled(StyleButton)`
+const StyledTaskAddFormSubmit = styled(StyledButton)`
   color: var(--pink);
   font-size: 1.25rem;
   font-weight: 700;
@@ -216,9 +220,10 @@ const StyleTaskAddFormSubmit = styled(StyleButton)`
   -webkit-text-fill-color: transparent;
   cursor: pointer;
   transition: 0.4s;
-
 `
 
+const StyledTaskListBody = styled(Fragment)`
+`
 const TaskAddForm = (
     {addTask}: {
         addTask: (taskName: string, taskDescription: string) => void
@@ -238,21 +243,21 @@ const TaskAddForm = (
     }
 
     return (
-        <StyleTaskAddForm onSubmit={handleSubmit}>
-            <StyleTaskAddFormName name='taskName'/>
-            <StyleTaskAddFormDescription name='taskDescription'/>
-            <StyleTaskAddFormSubmit> Add </StyleTaskAddFormSubmit>
-        </StyleTaskAddForm>
+        <StyledTaskAddForm onSubmit={handleSubmit}>
+            <StyledTaskAddFormName name='taskName'/>
+            <StyledTaskAddFormDescription name='taskDescription'/>
+            <StyledTaskAddFormSubmit> Add </StyledTaskAddFormSubmit>
+        </StyledTaskAddForm>
     );
 }
 
-const StyleTaskSearchForm = styled.form`
+const StyledTaskSearchForm = styled.form`
   justify-content: center;
   display: flex;
   margin-bottom: 2rem;
 `
 
-const StyleTaskSearchFromInput = styled(StyleInput)`
+const StyledTaskSearchFromInput = styled(StyledInput)`
   background-color: var(--darker);
   color: var(--light);
   border-radius: 1rem;
@@ -261,7 +266,7 @@ const StyleTaskSearchFromInput = styled(StyleInput)`
   margin-right: 1rem;
 `
 
-const StyleTaskSearchFormSubmit = styled(StyleButton)`
+const StyledTaskSearchFormSubmit = styled(StyledButton)`
   background-image: linear-gradient(to right, var(--pink), var(--purple));
   color: var(--pink);
   font-size: 1.25rem;
@@ -274,64 +279,80 @@ const StyleTaskSearchFormSubmit = styled(StyleButton)`
 
 const TaskSearchForm = () => {
     return (
-        <StyleTaskSearchForm>
-            <StyleTaskSearchFromInput/>
-            <StyleTaskSearchFormSubmit> Search </StyleTaskSearchFormSubmit>
-        </StyleTaskSearchForm>
+        <StyledTaskSearchForm>
+            <StyledTaskSearchFromInput/>
+            <StyledTaskSearchFormSubmit> Search </StyledTaskSearchFormSubmit>
+        </StyledTaskSearchForm>
     );
 }
 
+
+const StyledTaskTable = styled.div`
+  max-height: 100%;
+  width: 100%;
+  display: table;
+`
+
+const StyledTaskTableRow = styled.div`
+  display: table-row;
+`
+
+const TableCell = styled.div`
+  display: table-cell;
+`
+
+const StyledTaskListHeader = styled.div`
+  display: table-row;
+  color: var(--light);
+`
 
 const TaskList = ({taskComponentDict}: { taskComponentDict: ITaskComponentDict }) => {
     return (
-        <StyleTaskTable>
-            <StyleTaskListHeader>
-                <StyleTaskTableCell/>
-                <StyleTaskTableCell>Name</StyleTaskTableCell>
-                <StyleTaskTableCell>Description</StyleTaskTableCell>
-                <StyleTaskTableCell>Difficulty</StyleTaskTableCell>
-                <StyleTaskTableCell>Gems</StyleTaskTableCell>
-                <StyleTaskTableCell/>
-            </StyleTaskListHeader>
-            {tasksList}
-        </StyleTaskTable>
+        <StyledTaskTable>
+            <StyledTaskListHeader>
+                <TableCell/>
+                <TableCell>Name</TableCell>
+                <TableCell>Description</TableCell>
+                <TableCell>Difficulty</TableCell>
+                <TableCell>Gems</TableCell>
+                <TableCell/>
+            </StyledTaskListHeader>
+            {Object.values(taskComponentDict)}
+        </StyledTaskTable>
     );
 }
 
-const StyleTaskListElement = styled(Fragment)`
+const StyledTaskListElement = styled(Fragment)`
   font-size: 2rem;
 `
 
-const StyleContent = styled(Fragment)`
-
+const StyledContent = styled(Fragment)`
 `
 
-const StyleEdit = styled(StyleButton)`
+const StyledEdit = styled(StyledButton)`
   color: white;
 `
 
-const StyleDelete = styled(StyleButton)`
+const StyledDelete = styled(StyledButton)`
   color: white;
 `
 
-const StyleAction = styled.div`
+const StyledAction = styled.div`
 
 `
 
-const SpanTextbox = ({contentEditable, value = ''}: { contentEditable: boolean, value: string }) => {
-    return (
-        <StyleTaskTableCell>
-            <span className="input" role="textbox" contentEditable={contentEditable}>{value}</span>
-        </StyleTaskTableCell>
-    );
-}
-
-const StyleSpan = styled(SpanTextbox)`
+const StyledSpan = styled(({contentEditable, value = ''}:
+                               {
+                                   contentEditable: boolean,
+                                   value: string
+                               }) => {
+    return <span className="input" role="textbox" contentEditable={contentEditable}>{value}</span>;
+})`
 `
 
 
-let TaskListEntry = ({_id, coins, completed, description, name, difficulty, deleteTask}:
-                         ITask & { deleteTask: (taskID: string) => void }
+const TaskListEntry = ({_id, coins, completed, description, name, difficulty, deleteTask}:
+                           ITask & { deleteTask: (taskID: string) => void }
 ) => {
     const taskID = _id;
 
@@ -347,21 +368,21 @@ let TaskListEntry = ({_id, coins, completed, description, name, difficulty, dele
         await deleteTask(taskID)
     }
     return (
-        <StyleTaskTableRow>
-            <StyleTaskListElement>
-                <StyleContent>
-                    <StyleSpan contentEditable={false} value={taskID}/>
-                    <StyleSpan contentEditable={false} value={taskName}/>
-                    <StyleSpan contentEditable={false} value={taskDescription}/>
-                    <StyleSpan contentEditable={false} value='3'/>
-                    <StyleSpan contentEditable={false} value='500'/>
-                </StyleContent>
-                <StyleAction>
-                    <StyleEdit> edit </StyleEdit>
-                    <StyleDelete> delete </StyleDelete>
-                </StyleAction>
-            </StyleTaskListElement>
-        </StyleTaskTableRow>
+        <StyledTaskTableRow>
+            <StyledTaskListElement>
+                <StyledContent>
+                    <TableCell><StyledSpan contentEditable={false} value={taskID}/></TableCell>
+                    <TableCell><StyledSpan contentEditable={false} value={taskName}/></TableCell>
+                    <TableCell><StyledSpan contentEditable={false} value={taskDescription}/></TableCell>
+                    <TableCell><StyledSpan contentEditable={false} value='3'/></TableCell>
+                    <TableCell><StyledSpan contentEditable={false} value='500'/></TableCell>
+                </StyledContent>
+                <StyledAction>
+                    <TableCell><StyledEdit> edit </StyledEdit></TableCell>
+                    <TableCell><StyledDelete onClick={handleDelete}> delete </StyledDelete></TableCell>
+                </StyledAction>
+            </StyledTaskListElement>
+        </StyledTaskTableRow>
     );
 }
 
