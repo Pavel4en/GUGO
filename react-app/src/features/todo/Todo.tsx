@@ -341,7 +341,6 @@ const StyledDelete = styled(StyledButton)`
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
-
 `
 
 const StyledAction = styled.div`
