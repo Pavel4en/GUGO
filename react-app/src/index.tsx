@@ -3,17 +3,10 @@ import ReactDOM from 'react-dom/client'
 
 import reportWebVitals from './reportWebVitals';
 
-import TodoApp from "./todo";
+import store from "./app/store"
+import {Provider} from "react-redux"
 
-
-const App = () => {
-    return (
-        <React.StrictMode>
-            <TodoApp/>
-        </React.StrictMode>
-    );
-}
-
+import App from "./App"
 
 const rootElement = document.getElementById('root');
 if (!rootElement)
@@ -21,7 +14,11 @@ if (!rootElement)
 const root = ReactDOM.createRoot(rootElement);
 
 root.render(
-    <App/>
+    <React.StrictMode>
+        <Provider store={store}>
+            <App/>
+        </Provider>
+    </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

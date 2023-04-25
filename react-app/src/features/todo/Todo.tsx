@@ -1,30 +1,24 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import styled, {createGlobalStyle} from 'styled-components';
 
+import {
+    ITask, ITaskComponent
+} from "./interfaces";
 
-interface ITask {
-    _id: string,
-    coins: number,
-    completed: false,
-    description: string,
-    difficulty: number,
-    name: string
-}
+import {useDispatch, useSelector} from "react-redux";
 
-interface ITaskComponent extends JSX.Element {
-}
+import {
+    todoUpdated,
+    todoAdded,
+    todoDeleted,
+    todoEdited,
+    todoLoaded,
+    todoLoading,
+    todoToggled,
+    selectTasks
+} from "./todoSlice";
+import {Dispatch} from "@reduxjs/toolkit";
 
-interface ITaskComponentArr {
-    taskComponentArr: ITaskComponent[]
-}
-
-interface ITaskComponentDict {
-    [id: string]: ITaskComponent
-}
-
-interface IAddTask {
-    addTask: (task: JSX.Element) => void
-}
 
 const Global = createGlobalStyle`
   * {
@@ -38,7 +32,6 @@ const Global = createGlobalStyle`
     --pink: #7FFFD4;
     --purple: #FFA07A;
     --light: #E0FFFF;
-
 
     background-color: #6A5ACD
   }
@@ -82,86 +75,35 @@ const parseTasksFromURL = (url: string): Promise<ITask[]> => {
             headers: {'Content-Type': 'application/json'}
         })
 }
-const getCompletedTasks = () => {
-    return parseTasksFromURL('http://localhost:5000/completed_tasks/')
+const getCompleteTasks = () => {
+    return parseTasksFromURL('http://localhost:5000/complete_tasks/')
 }
 
 const getIncompleteTasks = () => {
-    return parseTasksFromURL('http://localhost:5000/uncompleted_tasks');
+    return parseTasksFromURL('http://localhost:5000/incomplete_tasks');
+}
+
+interface IUpdateTasks {
+    type: "todo/todoUpdated",
+    payload: ITask[]
+}
+
+const updateTasks = (dispatcher: Dispatch<IUpdateTasks>) => {
+    getIncompleteTasks().then((newTasks: ITask[]) => dispatcher(todoUpdated(newTasks)))
 }
 
 
 const TodoApp = () => {
-    const [taskComponentDict, setTaskComponentDict]
-        = useState<{ [id: string]: ITaskComponent }>({});
-
-    const updateTasksFromDB = () => {
-        getIncompleteTasks()
-            .then((tasks) => {
-                let newTasksComponentDict: ITaskComponentDict = {};
-
-                tasks.forEach((task: ITask) => {
-                    newTasksComponentDict[task._id] =
-                        <TaskListEntry
-                            {...task}
-                            deleteTask={deleteTask}/>
-                })
-
-                setTaskComponentDict(newTasksComponentDict);
-            })
-        // TODO: exceptions
-    }
-
-    const addTask = (name: string, description: string) => {
-        const requestOption = {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                name: name,
-                description: description
-            })
-        }
-
-        fetch('http://localhost:5000/add_task', requestOption)
-            .then(updateTasksFromDB)
-    }
-
-    const deleteTask = (taskID: string) => {
-        let newDict: ITaskComponentDict = {};
-        Object.keys(taskComponentDict).forEach((iterTaskID: string) => {
-            if (iterTaskID != taskID)
-                newDict[iterTaskID] = taskComponentDict[taskID];
-        });
-
-        setTaskComponentDict(newDict);
-
-        const requestOption = {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({
-                _id: taskID
-            })
-        }
-
-        fetch('http://localhost:5000/delete_task', requestOption)
-            .then(updateTasksFromDB)
-    }
-
     const editTask = (task: ITaskComponent) => {
         // TODO
     }
-
-    useEffect(() => {
-        updateTasksFromDB();
-    }, [])
-
 
     return (
         <>
             <Global/>
             <AppWrapper>
-                <TaskManageBar addTask={addTask}/>
-                <TaskList taskComponentDict={taskComponentDict}/>
+                <TaskManageBar/>
+                <TaskList/>
             </AppWrapper>
         </>
     );
@@ -175,14 +117,11 @@ const StyledTaskManageBar = styled.div`
 `
 
 
-const TaskManageBar = (
-    {addTask}: {
-        addTask: (taskName: string, taskDescription: string) => void,
-    }) => {
+const TaskManageBar = () => {
     return (
         <StyledTaskManageBar>
             <TaskSearchForm/>
-            <TaskAddForm addTask={addTask}/>
+            <TaskAddForm/>
         </StyledTaskManageBar>
     );
 }
@@ -224,11 +163,28 @@ const StyledTaskAddFormSubmit = styled(StyledButton)`
 
 const StyledTaskListBody = styled(Fragment)`
 `
-const TaskAddForm = (
-    {addTask}: {
-        addTask: (taskName: string, taskDescription: string) => void
-    }) => {
-    function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+const TaskAddForm = () => {
+    const dispatcher = useDispatch();
+
+    const addTask = (name: string, description: string) => {
+        const sendAddTask = () => {
+            const requestOption = {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    name: name,
+                    description: description
+                })
+            }
+            return fetch('http://localhost:5000/add_task', requestOption)
+        }
+
+        dispatcher(todoAdded({name: name, description: description, difficulty: 0, _id: '', coins: 0, completed: false}));
+
+        sendAddTask().then(() => updateTasks(dispatcher));
+    }
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         const target = event.target as typeof event.target & {
@@ -286,7 +242,6 @@ const TaskSearchForm = () => {
     );
 }
 
-
 const StyledTaskTable = styled.div`
   max-height: 100%;
   width: 100%;
@@ -306,7 +261,16 @@ const StyledTaskListHeader = styled.div`
   color: var(--light);
 `
 
-const TaskList = ({taskComponentDict}: { taskComponentDict: ITaskComponentDict }) => {
+const TaskList = () => {
+    const dispatcher = useDispatch();
+    const taskList = useSelector(selectTasks);
+
+    useEffect(() => updateTasks(dispatcher), [dispatcher]);
+
+    const taskComponentList = taskList.map(
+        (task: ITask) => <TaskListEntry {...task} />
+    );
+
     return (
         <StyledTaskTable>
             <StyledTaskListHeader>
@@ -317,7 +281,7 @@ const TaskList = ({taskComponentDict}: { taskComponentDict: ITaskComponentDict }
                 <TableCell>Gems</TableCell>
                 <TableCell/>
             </StyledTaskListHeader>
-            {Object.values(taskComponentDict)}
+            {(taskList.length > 0) ? taskComponentList : null}
         </StyledTaskTable>
     );
 }
@@ -351,31 +315,36 @@ const StyledSpan = styled(({contentEditable, value = ''}:
 `
 
 
-const TaskListEntry = ({_id, coins, completed, description, name, difficulty, deleteTask}:
-                           ITask & { deleteTask: (taskID: string) => void }
-) => {
-    const taskID = _id;
-
-    const [taskDifficulty, setTaskDifficulty] = useState(difficulty)
-    const [taskReward, setTaskReward] = useState(coins);
-    const [taskIsCompleted, setTaskIsCompleted] = useState(completed);
-    const [taskName, setTaskName] = useState(name);
-    const [taskDescription, setTaskDescription] = useState(description);
+const TaskListEntry = ({_id, description, name, coins, difficulty}: ITask) => {
+    const dispatcher = useDispatch();
 
     const handleDelete = async (event: React.FormEvent<HTMLButtonElement>) => {
+        const sendDeleteTask = () => {
+            const requestOption = {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    _id: _id
+                })
+            }
+            return fetch('http://localhost:5000/delete_task', requestOption)
+        }
         event.preventDefault();
 
-        await deleteTask(taskID)
+        dispatcher(todoDeleted(_id));
+
+        sendDeleteTask().then(() => updateTasks(dispatcher))
     }
+
     return (
         <StyledTaskTableRow>
             <StyledTaskListElement>
                 <StyledContent>
-                    <TableCell><StyledSpan contentEditable={false} value={taskID}/></TableCell>
-                    <TableCell><StyledSpan contentEditable={false} value={taskName}/></TableCell>
-                    <TableCell><StyledSpan contentEditable={false} value={taskDescription}/></TableCell>
-                    <TableCell><StyledSpan contentEditable={false} value='3'/></TableCell>
-                    <TableCell><StyledSpan contentEditable={false} value='500'/></TableCell>
+                    <TableCell><StyledSpan contentEditable={false} value={_id}/></TableCell>
+                    <TableCell><StyledSpan contentEditable={false} value={name}/></TableCell>
+                    <TableCell><StyledSpan contentEditable={false} value={description}/></TableCell>
+                    <TableCell><StyledSpan contentEditable={false} value={String(difficulty)}/></TableCell>
+                    <TableCell><StyledSpan contentEditable={false} value={String(coins)}/></TableCell>
                 </StyledContent>
                 <StyledAction>
                     <TableCell><StyledEdit> edit </StyledEdit></TableCell>

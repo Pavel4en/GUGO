@@ -723,9 +723,9 @@ class Task:
     def __init__(self, task_dict: dict):
         self.task_name = str(task_dict["name"])
         self.task_description = str(task_dict["description"])
-        self.difficulty = int(task_dict["difficultness"])
+        self.difficulty = int(task_dict["difficulty"])
         self.coins = int(task_dict["coins"])
-        self.completed = bool(task_dict["completed"])
+        self.complete = bool(task_dict["complete"])
 
     # Создать новое задание по его названию и описанию, а также определить уровень сложности задания
     # и награду за него
@@ -734,16 +734,20 @@ class Task:
         task_dict = {}
         task_dict["name"] = task_name
         task_dict["description"] = task_description
-        task_dict["difficultness"] = Task.define_difficultness_of_task(task_name)
+        task_dict["difficulty"] = Task.define_difficulty_of_task(task_name)
         # Что делать с задачами с неопределенной сложностью???
-        task_dict["coins"] = Task.define_reward(task_dict["difficultness"])
-        task_dict["completed"] = False
+        # TODO: обработка ошибок нейронки
+        try:
+            task_dict["coins"] = Task.define_reward(task_dict["difficulty"])
+        except TodoException:
+            task_dict["coins"] = -1
+        task_dict["complete"] = False
         return cls(task_dict)
 
     # Определить м помощью ИИ награду за задание. Оценка идет от 1 до 5.
     # Если сложность не удалось определить, возвращается 0
     @classmethod
-    def define_difficultness_of_task(cls, task_name: str) -> int:
+    def define_difficulty_of_task(cls, task_name: str) -> int:
         # Получаем оценку сложности задачи с помощью нейросети
         model_engine = "text-davinci-003"
         prompt = f"What is the difficulty level of the task '{task_name}' on a scale of 1 to 5?"
@@ -766,25 +770,25 @@ class Task:
     # Определить награду за сложность задачи и бросить исключение, если
     # сложность определить не удалось
     @classmethod
-    def define_reward(cls, difficultness: int) -> int:
-        difficultness_to_reward = {
+    def define_reward(cls, difficulty: int) -> int:
+        difficulty_to_reward = {
             1: 50,
             2: 100,
             3: 300,
             4: 500,
             5: 1000
         }
-        if difficultness not in difficultness_to_reward:
-            raise TodoException(f"Can not define reward for difficultenss `{difficultness}`")
-        return difficultness_to_reward[difficultness]
+        if difficulty not in difficulty_to_reward:
+            raise TodoException(f"Can not define reward for difficulty `{difficulty}`")
+        return difficulty_to_reward[difficulty]
 
     def to_dict(self):
         return {
             "name": self.task_name,
             "description": self.task_description,
-            "difficultness": self.difficulty,
+            "difficulty": self.difficulty,
             "coins": self.coins,
-            "completed": self.completed
+            "complete": self.complete
         }
 
 
@@ -882,7 +886,7 @@ def complete_task():
     # Получаем задачу по ее id
     task = tasks.find_one({'_id': ObjectId(task_id)})
     # Обновляем статус задачи
-    tasks.update_one({'_id': ObjectId(task_id)}, {'$set': {'completed': True}})
+    tasks.update_one({'_id': ObjectId(task_id)}, {'$set': {'complete': True}})
     # Перемещаем задачу в коллекцию выполненных задач
     archive_tasks.insert_one(task)
     # Удаляем задачу из коллекции задач
@@ -900,19 +904,19 @@ def complete_task():
 #     {
 #         "_id": "643ff04367a2c94c902852e5",
 #         "coins": 500,
-#         "completed": false,
+#         "complete": false,
 #         "description": "",
 #         "difficulty": 4,
 #         "name": "Купить хлеб в другом городе"
 #     }
 # ]
-@app.route('/completed_tasks', methods=['POST'])
-def get_completed_tasks():
-    completed_tasks_list = []
+@app.route('/complete_tasks', methods=['POST'])
+def get_complete_tasks():
+    complete_tasks_list = []
     for complete_task in archive_tasks.find():
         complete_task["_id"] = str(complete_task["_id"])
-        completed_tasks_list.append(complete_task)
-    return completed_tasks_list
+        complete_tasks_list.append(complete_task)
+    return complete_tasks_list
 
 
 # Вернуть ВСЕ невыполненные задания
@@ -925,7 +929,7 @@ def get_completed_tasks():
 #     {
 #         "_id": "6441f63d1b2033ac84d4ae52",
 #         "coins": 50,
-#         "completed": false,
+#         "complete": false,
 #         "description": "",
 #         "difficulty": 1,
 #         "name": "сходить в туалет"
@@ -933,19 +937,19 @@ def get_completed_tasks():
 #     {
 #         "_id": "6441f6a61b2033ac84d4ae53",
 #         "coins": 500,
-#         "completed": false,
+#         "complete": false,
 #         "description": "",
 #         "difficulty": 4,
 #         "name": "проехать на машине 1000 км"
 #     },
 # ]
-@app.route('/uncompleted_tasks', methods=['POST'])
-def get_uncompleted_tasks():
-    uncompleted_tasks_list = []
+@app.route('/incomplete_tasks', methods=['POST'])
+def get_incomplete_tasks():
+    incomplete_tasks_list = []
     for incomplete_task in tasks.find():
         incomplete_task["_id"] = str(incomplete_task["_id"])
-        uncompleted_tasks_list.append(incomplete_task)
-    return uncompleted_tasks_list
+        incomplete_tasks_list.append(incomplete_task)
+    return incomplete_tasks_list
 
 
 if __name__ == '__main__':
