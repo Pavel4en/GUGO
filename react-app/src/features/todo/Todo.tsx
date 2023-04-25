@@ -1,7 +1,9 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import styled, {createGlobalStyle} from 'styled-components';
-import editIcon from './writing.png';
-import deleteIcon from './delete.png';
+
+import deleteImage from "./images/delete.png"
+import editImage from "./images/edit.png"
+
 import {
     ITask, ITaskComponent
 } from "./interfaces";
@@ -18,11 +20,12 @@ import {
     todoToggled,
     selectTasks
 } from "./todoSlice";
+
 import {Dispatch} from "@reduxjs/toolkit";
 
 
 const Global = createGlobalStyle`
-body {
+  body {
     background-color: #232946;
     color: #fffffe;
     font-family: Arial, sans-serif;
@@ -30,27 +33,26 @@ body {
 `
 
 const StyledInput = styled.input`
-flex: 1;
-padding: 10px;
-border-radius: 5px;
-border: 2px solid #b8c1ec;
-margin-right: 10px;
+  flex: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 2px solid #b8c1ec;
+  margin-right: 10px;
 `
 
 const StyledButton = styled.button`
-
-padding: 10px;
-background-color: #eebbc3;
-color: #232946;
-border: none;
-border-radius: 5px;
-margin-top: 20px;
+  padding: 10px;
+  background-color: #eebbc3;
+  color: #232946;
+  border: none;
+  border-radius: 5px;
+  margin-top: 20px;
 `
 
 const AppWrapper = styled.div`
-max-width: 800px;
-margin: 0 auto;
-padding: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px;
 `
 const Title = styled.h1`
   text-align: center;
@@ -100,9 +102,9 @@ const TodoApp = () => {
 
     return (
         <>
-        <div>
-            <Title>GUGO TTG</Title>
-        </div>
+            <div>
+                <Title>GUGO TTG</Title>
+            </div>
             <Global/>
             <AppWrapper>
                 <TaskManageBar/>
@@ -183,7 +185,14 @@ const TaskAddForm = () => {
             return fetch('http://localhost:5000/add_task', requestOption)
         }
 
-        dispatcher(todoAdded({name: name, description: description, difficulty: 0, _id: '', coins: 0, completed: false}));
+        dispatcher(todoAdded({
+            name: name,
+            description: description,
+            difficulty: 0,
+            _id: '',
+            coins: 0,
+            completed: false
+        }));
 
         sendAddTask().then(() => updateTasks(dispatcher));
     }
@@ -212,27 +221,27 @@ const TaskAddForm = () => {
 }
 
 const StyledTaskSearchForm = styled.form`
-display: flex;
-align-items: center;
-margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 40px;
 `
 
 const StyledTaskSearchFromInput = styled(StyledInput)`
-flex: 1;
-padding: 10px;
-background-color: #fffffe;
-color: #b8c1ec;
-border: none;
-border-radius: 5px 0 0 5px;
+  flex: 1;
+  padding: 10px;
+  background-color: #fffffe;
+  color: #b8c1ec;
+  border: none;
+  border-radius: 5px 0 0 5px;
 `
 
 const StyledTaskSearchFormSubmit = styled(StyledButton)`
-padding: 10px 20px;
-margin-bottom: 20px;
-background-color: #eebbc3;
-color: #232946;
-border: none;
-border-radius: 0 5px 5px 0;
+  padding: 10px 20px;
+  margin-bottom: 20px;
+  background-color: #eebbc3;
+  color: #232946;
+  border: none;
+  border-radius: 0 5px 5px 0;
 `
 
 const TaskSearchForm = () => {
@@ -245,29 +254,29 @@ const TaskSearchForm = () => {
 }
 
 const StyledTaskTable = styled.div`
-border: 1px solid #b8c1ec;
-border-radius: 5px;
-overflow: hidden;
+  border: 1px solid #b8c1ec;
+  border-radius: 5px;
+  overflow: hidden;
 `
 
 const StyledTaskTableRow = styled.div`
-display: flex;
-align-items: center;
-padding: 10px;
-border-bottom: 1px solid #b8c1ec;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #b8c1ec;
 `
 
 const TableCell = styled.div`
-flex: 1;
+  flex: 1;
 `
 
 const StyledTaskListHeader = styled.div`
-background-color: #eebbc3;
-padding: 10px;
-display: flex;
-font-size: 18px;
-font-weight: bold;
-color: #232946;
+  background-color: #eebbc3;
+  padding: 10px;
+  display: flex;
+  font-size: 18px;
+  font-weight: bold;
+  color: #232946;
 `
 
 const TaskList = () => {
@@ -289,56 +298,55 @@ const TaskList = () => {
                 <TableCell>Difficulty</TableCell>
                 <TableCell>Gems</TableCell>
                 <TableCell/>
-                </StyledTaskListHeader>
+            </StyledTaskListHeader>
             {(taskList.length > 0) ? taskComponentList : null}
         </StyledTaskTable>
     );
 }
 
 const StyledTaskListElement = styled(Fragment)`
-display: flex;
-align-items: center;
-padding: 10px;
-background-color: #fffffe;
-color: #232946;
-border-bottom: 1px solid #b8c1ec;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #fffffe;
+  color: #232946;
+  border-bottom: 1px solid #b8c1ec;
 `
 
 const StyledContent = styled(Fragment)`
-flex: 1;
+  flex: 1;
 `
 
 const StyledEdit = styled(StyledButton)`
-    padding: 15px;
-    background-color: #eebbc3;
-    color: #232946;
-    border: none;
-    border-radius: 5px;
-    margin-right: 10px;
-    background-image: url(${editIcon});
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 24px 24px;
-    display: flex;
+  padding: 15px;
+  background-color: #eebbc3;
+  color: #232946;
+  border: none;
+  border-radius: 5px;
+  margin-right: 10px;
+  background-image: url(${editImage});
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 24px 24px;
+  display: flex;
 `
 
 const StyledDelete = styled(StyledButton)`
-    padding: 15px;
-    background-color: #eebbc3;
-    color: #232946;
-    border: none;
-    border-radius: 5px;
-    background-image: url(${deleteIcon});
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 24px 24px;
+  padding: 15px;
+  background-color: #eebbc3;
+  color: #232946;
+  border: none;
+  border-radius: 5px;
+  background-image: url(${deleteImage});
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 24px 24px;
 
 `
 
 const StyledAction = styled.div`
 
 `
-
 
 
 const StyledSpan = styled(({contentEditable, value = ''}:
@@ -376,15 +384,14 @@ const TaskListEntry = ({_id, description, name, coins, difficulty}: ITask) => {
         <StyledTaskTableRow>
             <StyledTaskListElement>
                 <StyledContent>
-                    <TableCell><StyledSpan contentEditable={false} value={_id}/></TableCell>
                     <TableCell><StyledSpan contentEditable={false} value={name}/></TableCell>
                     <TableCell><StyledSpan contentEditable={false} value={description}/></TableCell>
                     <TableCell><StyledSpan contentEditable={false} value={String(difficulty)}/></TableCell>
                     <TableCell><StyledSpan contentEditable={false} value={String(coins)}/></TableCell>
                 </StyledContent>
                 <StyledAction>
-                    <TableCell><StyledEdit>  </StyledEdit></TableCell>
-                    <TableCell><StyledDelete onClick={handleDelete}>  </StyledDelete></TableCell>
+                    <TableCell><StyledEdit> </StyledEdit></TableCell>
+                    <TableCell><StyledDelete onClick={handleDelete}> </StyledDelete></TableCell>
                 </StyledAction>
             </StyledTaskListElement>
         </StyledTaskTableRow>
