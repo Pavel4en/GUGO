@@ -1,6 +1,7 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import styled, {createGlobalStyle} from 'styled-components';
-
+import editIcon from './writing.png';
+import deleteIcon from './delete.png';
 
 interface ITask {
     _id: string,
@@ -27,43 +28,41 @@ interface IAddTask {
 }
 
 const Global = createGlobalStyle`
-  * {
-    margin: 0;
-    box-sizing: border-box;
-
-    --dark: #20B2AA;
-    --darker: #008B8B;
-    --darkest: #008080;
-    --grey: #AFEEEE;
-    --pink: #7FFFD4;
-    --purple: #FFA07A;
-    --light: #E0FFFF;
-
-
-    background-color: #6A5ACD
+body {
+    background-color: #232946;
+    color: #fffffe;
+    font-family: Arial, sans-serif;
   }
 `
 
 const StyledInput = styled.input`
-  appearance: none;
-  border: none;
-  outline: none;
-  background: none;
+flex: 1;
+padding: 10px;
+border-radius: 5px;
+border: 2px solid #b8c1ec;
+margin-right: 10px;
 `
 
 const StyledButton = styled.button`
-  appearance: none;
-  border: none;
-  outline: none;
-  background: none;
+
+padding: 10px;
+background-color: #eebbc3;
+color: #232946;
+border: none;
+border-radius: 5px;
+margin-top: 20px;
 `
 
 const AppWrapper = styled.div`
-  margin: 0 auto;
-  width: 100%;
-  max-width: 960px;
-  // padding: 0 15px;
+max-width: 800px;
+margin: 0 auto;
+padding: 40px;
 `
+const Title = styled.h1`
+  text-align: center;
+  font-size: 50px;
+`;
+
 
 const JSONFromURL = async <TResponse, >(url: string, config: RequestInit = {}): Promise<TResponse> => {
     try {
@@ -92,6 +91,7 @@ const getIncompleteTasks = () => {
 
 
 const TodoApp = () => {
+    
     const [taskComponentDict, setTaskComponentDict]
         = useState<{ [id: string]: ITaskComponent }>({});
 
@@ -158,6 +158,9 @@ const TodoApp = () => {
 
     return (
         <>
+        <div>
+            <Title>GUGO TTG</Title>
+        </div>
             <Global/>
             <AppWrapper>
                 <TaskManageBar addTask={addTask}/>
@@ -171,7 +174,8 @@ const StyledTaskManageBar = styled.div`
   // display: flex;
   padding: 5rem;
   width: 100%;
-  margin-bottom: 5rem;
+  margin-bottom: 1rem;
+  margin-left: -5rem;
 `
 
 
@@ -244,37 +248,35 @@ const TaskAddForm = (
 
     return (
         <StyledTaskAddForm onSubmit={handleSubmit}>
-            <StyledTaskAddFormName name='taskName'/>
-            <StyledTaskAddFormDescription name='taskDescription'/>
+            <StyledTaskAddFormName name='taskName' placeholder='Введите название задачи'/>
+            <StyledTaskAddFormDescription name='taskDescription' placeholder='Введите описание задачи'/>
             <StyledTaskAddFormSubmit> Add </StyledTaskAddFormSubmit>
         </StyledTaskAddForm>
     );
 }
 
 const StyledTaskSearchForm = styled.form`
-  justify-content: center;
-  display: flex;
-  margin-bottom: 2rem;
+display: flex;
+align-items: center;
+margin-bottom: 40px;
 `
 
 const StyledTaskSearchFromInput = styled(StyledInput)`
-  background-color: var(--darker);
-  color: var(--light);
-  border-radius: 1rem;
-  font-size: 1.25rem;
-  padding: 1rem;
-  margin-right: 1rem;
+flex: 1;
+padding: 10px;
+background-color: #fffffe;
+color: #b8c1ec;
+border: none;
+border-radius: 5px 0 0 5px;
 `
 
 const StyledTaskSearchFormSubmit = styled(StyledButton)`
-  background-image: linear-gradient(to right, var(--pink), var(--purple));
-  color: var(--pink);
-  font-size: 1.25rem;
-  font-weight: 700;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  cursor: pointer;
-  transition: 0.4s;
+padding: 10px 20px;
+margin-bottom: 20px;
+background-color: #eebbc3;
+color: #232946;
+border: none;
+border-radius: 0 5px 5px 0;
 `
 
 const TaskSearchForm = () => {
@@ -288,22 +290,29 @@ const TaskSearchForm = () => {
 
 
 const StyledTaskTable = styled.div`
-  max-height: 100%;
-  width: 100%;
-  display: table;
+border: 1px solid #b8c1ec;
+border-radius: 5px;
+overflow: hidden;
 `
 
 const StyledTaskTableRow = styled.div`
-  display: table-row;
+display: flex;
+align-items: center;
+padding: 10px;
+border-bottom: 1px solid #b8c1ec;
 `
 
 const TableCell = styled.div`
-  display: table-cell;
+flex: 1;
 `
 
 const StyledTaskListHeader = styled.div`
-  display: table-row;
-  color: var(--light);
+background-color: #eebbc3;
+padding: 10px;
+display: flex;
+font-size: 18px;
+font-weight: bold;
+color: #232946;
 `
 
 const TaskList = ({taskComponentDict}: { taskComponentDict: ITaskComponentDict }) => {
@@ -316,30 +325,66 @@ const TaskList = ({taskComponentDict}: { taskComponentDict: ITaskComponentDict }
                 <TableCell>Difficulty</TableCell>
                 <TableCell>Gems</TableCell>
                 <TableCell/>
-            </StyledTaskListHeader>
+                </StyledTaskListHeader>
+            <TaskListEntry 
+                _id = 'pizda'
+                coins = {100}
+                completed = {false}
+                description = 'zalupa' 
+                name = 'voopche pohuy'
+                difficulty = {100}
+                deleteTask = {(sdaf: string) => {}}
+            />
             {Object.values(taskComponentDict)}
         </StyledTaskTable>
     );
 }
 
 const StyledTaskListElement = styled(Fragment)`
-  font-size: 2rem;
+display: flex;
+align-items: center;
+padding: 10px;
+background-color: #fffffe;
+color: #232946;
+border-bottom: 1px solid #b8c1ec;
 `
 
 const StyledContent = styled(Fragment)`
+flex: 1;
 `
 
 const StyledEdit = styled(StyledButton)`
-  color: white;
+    padding: 15px;
+    background-color: #eebbc3;
+    color: #232946;
+    border: none;
+    border-radius: 5px;
+    margin-right: 10px;
+    background-image: url(${editIcon});
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px 24px;
+    display: flex;
 `
 
 const StyledDelete = styled(StyledButton)`
-  color: white;
+    padding: 15px;
+    background-color: #eebbc3;
+    color: #232946;
+    border: none;
+    border-radius: 5px;
+    background-image: url(${deleteIcon});
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px 24px;
+
 `
 
 const StyledAction = styled.div`
 
 `
+
+
 
 const StyledSpan = styled(({contentEditable, value = ''}:
                                {
@@ -378,8 +423,8 @@ const TaskListEntry = ({_id, coins, completed, description, name, difficulty, de
                     <TableCell><StyledSpan contentEditable={false} value='500'/></TableCell>
                 </StyledContent>
                 <StyledAction>
-                    <TableCell><StyledEdit> edit </StyledEdit></TableCell>
-                    <TableCell><StyledDelete onClick={handleDelete}> delete </StyledDelete></TableCell>
+                    <TableCell><StyledEdit>  </StyledEdit></TableCell>
+                    <TableCell><StyledDelete onClick={handleDelete}>  </StyledDelete></TableCell>
                 </StyledAction>
             </StyledTaskListElement>
         </StyledTaskTableRow>
