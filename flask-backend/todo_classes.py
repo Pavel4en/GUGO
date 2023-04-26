@@ -1,4 +1,5 @@
 from config import api_key
+
 # Подключаем api нейросетки davinci
 import openai
 

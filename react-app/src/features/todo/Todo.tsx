@@ -23,6 +23,7 @@ import {
 
 import {Dispatch} from "@reduxjs/toolkit";
 
+
 const Global = createGlobalStyle`
   body {
     background-color: #232946;
@@ -53,11 +54,11 @@ const AppWrapper = styled.div`
   margin: 0 auto;
   padding: 40px;
 `
-
 const Title = styled.h1`
   text-align: center;
   font-size: 50px;
 `;
+
 
 const JSONFromURL = async <TResponse, >(url: string, config: RequestInit = {}): Promise<TResponse> => {
     try {
@@ -76,13 +77,12 @@ const parseTasksFromURL = (url: string): Promise<ITask[]> => {
             headers: {'Content-Type': 'application/json'}
         })
 }
-
 const getCompleteTasks = () => {
-    return parseTasksFromURL('http://localhost:5000/complete_tasks/')
+    return parseTasksFromURL('http://localhost:5000/completed_tasks/')
 }
 
 const getIncompleteTasks = () => {
-    return parseTasksFromURL('http://localhost:5000/incomplete_tasks');
+    return parseTasksFromURL('http://localhost:5000/incompleted_tasks');
 }
 
 interface IUpdateTasks {
@@ -94,11 +94,6 @@ const updateTasks = (dispatcher: Dispatch<IUpdateTasks>) => {
     getIncompleteTasks().then((newTasks: ITask[]) => dispatcher(todoUpdated(newTasks)))
 }
 
-const Header = styled.header`
-position: sticky;  
-top: 0;
-background-color: #232946;
-`
 
 const TodoApp = () => {
     const editTask = (task: ITaskComponent) => {
@@ -107,34 +102,26 @@ const TodoApp = () => {
 
     return (
         <>
+            <div>
+                <Title>GUGO TTG</Title>
+            </div>
             <Global/>
             <AppWrapper>
-                <Header>
-                    <div>
-                        <Title>GUGO TTG</Title>
-                    </div>
-                    <TaskManageBar/>
-                    <StyledTaskListHeader>
-                        <TableCell/>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Description</TableCell>
-                        <TableCell>Difficulty</TableCell>
-                        <TableCell>Gems</TableCell>
-                        <TableCell/>
-                    </StyledTaskListHeader> 
-                </Header>
-                    <TaskList/>
+                <TaskManageBar/>
+                <TaskList/>
             </AppWrapper>
         </>
     );
 }
 
 const StyledTaskManageBar = styled.div`
-padding: 5rem;
-width: 100%;
-margin-bottom: 1rem;
-margin-left: -5rem;
+  // display: flex;
+  padding: 5rem;
+  width: 100%;
+  margin-bottom: 1rem;
+  margin-left: -5rem;
 `
+
 
 const TaskManageBar = () => {
     return (
@@ -266,36 +253,39 @@ const TaskSearchForm = () => {
     );
 }
 
-const StyledTaskTable = styled.div`
-  border: 1px solid #b8c1ec;
-  border-radius: 5px;
-  overflow: hidden;
-`
-
-const StyledTaskTableRow = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #b8c1ec;
-`
-
-const TableCell = styled.div`
-  flex: 1;
-`
-
-const StyledTaskListHeader = styled.div`
-background-color: #eebbc3;
-padding: 10px;
-display: flex;
-font-size: 18px;
-font-weight: bold;
-color: #232946;
+const StyledTaskTable = styled.table`
+border-collapse: collapse;
 border-radius: 5px;
-position: sticky;  
-top: 0;
+overflow: hidden;
+width: 100%;
+table-layout: fixed;
+`;
 
+const StyledTaskTableRow = styled.tr`
+  border-bottom: 1px solid #b8c1ec;
+`;
 
-`
+const StyledTableHeaderRow = styled.tr`
+  background-color: #eebbc3;
+  display: table-row;
+`;
+
+const StyledTableCell = styled.td`
+  padding: 10px;
+  text-align: center;
+  min-width: 0;
+`;
+
+const StyledTableHeaderCell = styled.th`
+  padding: 10px;
+  text-align: center;
+  color: #232946;
+  font-size: 18px;
+  font-weight: bold;
+  border: none;
+  white-space: nowrap;
+  min-width: 0;
+`;
 
 const TaskList = () => {
     const dispatcher = useDispatch();
@@ -309,7 +299,14 @@ const TaskList = () => {
 
     return (
         <StyledTaskTable>
-            
+            <StyledTableHeaderRow>
+                <StyledTableHeaderCell/>
+                <StyledTableHeaderCell>Name</StyledTableHeaderCell>
+                <StyledTableHeaderCell>Description</StyledTableHeaderCell>
+                <StyledTableHeaderCell>Difficulty</StyledTableHeaderCell>
+                <StyledTableHeaderCell>Gems</StyledTableHeaderCell>
+                <StyledTableHeaderCell/>
+            </StyledTableHeaderRow>
             {(taskList.length > 0) ? taskComponentList : null}
         </StyledTaskTable>
     );
@@ -352,6 +349,8 @@ const StyledDelete = styled(StyledButton)`
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
+  display: flex;
+
 `
 
 const StyledAction = styled.div`
@@ -394,14 +393,15 @@ const TaskListEntry = ({_id, description, name, coins, difficulty}: ITask) => {
         <StyledTaskTableRow>
             <StyledTaskListElement>
                 <StyledContent>
-                    <TableCell><StyledSpan contentEditable={false} value={name}/></TableCell>
-                    <TableCell><StyledSpan contentEditable={false} value={description}/></TableCell>
-                    <TableCell><StyledSpan contentEditable={false} value={String(difficulty)}/></TableCell>
-                    <TableCell><StyledSpan contentEditable={false} value={String(coins)}/></TableCell>
+                    <StyledTableCell></StyledTableCell>
+                    <StyledTableCell><StyledSpan contentEditable={false} value={name}/></StyledTableCell>
+                    <StyledTableCell><StyledSpan contentEditable={false} value={description}/></StyledTableCell>
+                    <StyledTableCell><StyledSpan contentEditable={false} value={String(difficulty)}/></StyledTableCell>
+                    <StyledTableCell><StyledSpan contentEditable={false} value={String(coins)}/></StyledTableCell>
                 </StyledContent>
                 <StyledAction>
-                    <TableCell><StyledEdit> </StyledEdit></TableCell>
-                    <TableCell><StyledDelete onClick={handleDelete}> </StyledDelete></TableCell>
+                    <StyledTableCell><StyledEdit> </StyledEdit></StyledTableCell>
+                    <StyledTableCell><StyledDelete onClick={handleDelete}> </StyledDelete></StyledTableCell>
                 </StyledAction>
             </StyledTaskListElement>
         </StyledTaskTableRow>

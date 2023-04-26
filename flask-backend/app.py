@@ -1,7 +1,9 @@
-from flask import make_response, Flask, render_template, url_for, request, session, redirect
+from flask import make_response, Flask, render_template, request, session
 from flask_cors import CORS
+
 from game_classes import *
 from todo_classes import *
+
 from bd import *
 
 import traceback
@@ -17,9 +19,9 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 # Обертка для обработки ошибок route функций
 def exc_handler(route_func):
-    def exc_handled_route_func(*args, **kargs):
+    def exc_handled_route_func(*args, **kwargs):
         try:
-            return route_func(*args, **kargs)
+            return route_func(*args, **kwargs)
         except GameException as ge:
             log_msg = "--- Traceback of game error ---\n" + \
                       ''.join(traceback.format_tb(ge.__traceback__)) + \
@@ -621,7 +623,7 @@ def login():
 @app.route('/register', methods=['POST', 'GET'])
 def register():
     if request.method == 'POST':
-        register_data = request.get_json();
+        register_data = request.get_json()
         existing_user = users.find_one({'username': register_data['username']})
 
         # Если такого пользователя еще нет, то функция генерирует хэш от введенного пароля,
