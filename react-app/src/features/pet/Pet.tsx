@@ -1,11 +1,16 @@
 import React, {Fragment, useEffect, useState} from 'react';
 import styled, {createGlobalStyle} from 'styled-components';
 
-import petHappy from './images/m-happy.png'
-import petClassic from './images/m-classic.png'
-import petSad from './images/m-sad.png'
-import petSleepy from './images/m-sleepy.png'
+import petHappy from './images/pet-pet/m-happy.png'
+import petClassic from './images/pet-pet/m-classic.png'
+import petSad from './images/pet-pet/m-sad.png'
+import petSleepy from './images/pet-pet/m-sleepy.png'
+import petAngry from './images/pet-pet/m-angry.png'
 
+
+import lamp from './images/pet-button/b-sleep.png'
+import computer from './images/pet-button/b-computer.png'
+import eat from './images/pet-button/b-eat.png'
 
 // interface Statistic {
 //     feed: number,
@@ -13,81 +18,142 @@ import petSleepy from './images/m-sleepy.png'
 //     happinnes: number
 // }
 
-const Global = styled.div`
-  * {
+const Global = createGlobalStyle`
+* {
     margin: 0;
     box-sizing: border-box;
   }
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #232946;
+}
+`
+
+const StyledButton = styled.button`
+border: none;
+margin-top: 4rem;
+width: 5.3rem;
+height: 5.3rem;
+background-size: 5.3rem;
+border-radius: 13px;
+margin-right: 5rem;
+border: none;
+background-repeat: no-repeat;
+background-position: center;
+cursor: pointer;
 `
 
 const AppWrapper = styled.div`
-  // margin: 20% auto;
-  max-width: 960px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  flex-direction: column;
+display: flex;
+align-items: center;
+justify-content: center;
+text-align: center;
+flex-direction: column;
+position: absolute;
+top: 50%;
+left: 50%;
+margin-right: -50%;
+transform:translate(-50%,-50%);
+max-width: 800px;
+margin: 0 auto;
 `
 
 const PetApp = () => {
     return (
         <>
             <Global/>
-            <AppWrapper>
-                <PetNest/>
-                <StatsList/>
-            </AppWrapper>
+                <AppWrapper>
+                    <StyledPetsName>DOLBAEB</StyledPetsName>
+                    <Visual>
+                        <StyledPetNest>
+                        <StatsList/>
+                            </StyledPetNest>  
+                        
+                    </Visual>
+                    <StatsActions>
+                        <StyledEat/>
+                        <StyledLamp/>
+                        <StyledComputer/>
+                    </StatsActions>
+                </AppWrapper>
         </>
     );
 }
 
-const StyledPetNest = styled.button`
-  background-color: red;
-  background-image: url(${petClassic});
-  width: 17rem;
-  height: 17rem;
-  background-size: 17rem;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-size: 4rem;
-  margin-bottom: 1rem;
+const StyledPetsName = styled.div`
+font-size: 3rem;
+margin-bottom: 2rem;
+font-weight: 700;
+// -webkit-background-clip: text;
+transition: 0.4s;
+
+border: none;
+outline: none;
+
+background: -webkit-linear-gradient(white, #eebbc3);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
 `
 
+const StyledLamp = styled(StyledButton)`
+background-image: url(${lamp});
+`
 
-// передать изображение пета
-// const petNestCharacter = () => {
-//     return (
-//         <img jklnsadojnsafvjklndsafasjldfndsafoj
-//     )
-// }
+const StyledComputer = styled(StyledButton)`
+background-image: url(${computer});
+`
+
+const StyledEat = styled(StyledButton)`
+background-image: url(${eat});
+`
+
+const Visual = styled.div`
+display: flex;
+align-items: center;
+`
+
+const StyledPetNest = styled.div`
+background-image: url(${petClassic});
+width: 30rem;
+height: 30rem;
+background-size: 30rem;
+background-position: center;
+background-repeat: no-repeat;
+margin-bottom: 1rem;
+
+position: relative;
+// top: 50%;
+left: 50%;
+// margin-left: 50%;
+transform: translate(-50%, 0);
+`
 
 const PetNest = () => {
     return (
-        <StyledPetNest/>
+        <StyledPetNest>
+        </StyledPetNest>
     )
 }
 
 const StyledStatsList = styled.div`
-  font-family: 'Open Sans', sans-serif;
-  margin-right: 0;
-
-  color: #f2f2f2;
-  cursor: pointer;
-  padding: 1rem 0;
-  width: 40%;
+margin-left: 100%;
+padding-left: 2rem;
+margin-top: 50%;
+transform: translate(0, -50%);
 `
 
-const StyledStatsListItem = styled.div`
-  padding: 1rem;
-  margin-bottom: 1rem;
-  border-radius: 35px;
-  background: #777;
+const StatsActions = styled.div`
+display: flex;
+align-items: center;
+justify-content: center;
+text-align: center;
+background-position: center;
 
-  justify-content: center;
+margin-left: 6rem;
+margin-right: 1rem;
+
 `
-
 const StatsList = () => {
     return (
         <StyledStatsList>
@@ -98,32 +164,43 @@ const StatsList = () => {
                 Sleepy: 100%
             </StyledStatsListItem>
             <StyledStatsListItem>
-                Happinnes: 100%
+                Happiness: 100%
             </StyledStatsListItem>
         </StyledStatsList>
     )
 }
 
-// const StatsListEntry = ({feed, sleep, happinnes}: Statistic) => {
+const StyledStatsListItem = styled.div`
+padding: 1rem;
+margin-bottom: 1rem;
+margin-right: 1rem;
+border-radius: 35px;
+justify-content: center;
+background-color: #eebbc3;
+width: 14rem;
+height: 50%;
 
-//     const [FeedStat, setFeedStat] = useState(feed);
-//     const [SleepingStat, setSleepingStat] = useState(sleep);
-//     const [HappinnesStat, setHappinnesStat] = useState(happinnes);
+position: relative;
+animation: fillBar 2.5s 1;
 
-//     return (
-//         <StyledPetStats>
-//             <StyledPetStatsItem contentEditable={false}>
-//                 {feed}
-//             </StyledPetStatsItem>
-//             <StyledPetStatsItem contentEditable={false}>
-//                 {sleep}
-//             </StyledPetStatsItem>
-//             <StyledPetStatsItem contentEditable={false}>
-//                 {happinnes}
-//             </StyledPetStatsItem>
-//         </StyledPetStats>
-//     )
-// }
+    &:before {
+        position: absolute;
+        background: white;
+        transform: translateX(50%);
+    }
+    
+    &:after {
+        position: absolute;
+        transform: translateX(50%) rotate(45deg);
+    }
+
+
+
+
+
+`
+
+
 
 
 export default PetApp;
