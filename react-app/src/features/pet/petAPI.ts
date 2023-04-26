@@ -1,9 +1,5 @@
 import {IPet} from "./interfaces";
 
-import {Dispatch} from "@reduxjs/toolkit";
-
-import {petSetup} from "./petSlice";
-
 import {getJSONFromURL, sendDataOnURL} from "../../utils/webUtils";
 
 const petAPI_URL = 'http://localhost:5000/gameapi'
@@ -24,6 +20,7 @@ export const petAPI = {
             }
         );
     },
+    sendHappinessAdded: () => {}, //
     sendClothesPutOn: (clothesID: string) => {
         return sendDataOnURL(
             petAPI_URL + '/put_on_item',
@@ -40,4 +37,10 @@ export const petAPI = {
             }
         )
     },
+    sendSleepToggled: () => {
+        return sendDataOnURL(
+            petAPI_URL + 'toggle_sleep',
+            {}
+        )
+    }
 }

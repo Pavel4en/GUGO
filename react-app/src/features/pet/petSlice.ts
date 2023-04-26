@@ -13,6 +13,7 @@ const initialState: IPet = {
         happiness: 100
     },
     clothes: [] as string[],
+    isSleeping: false
 }
 
 export const petSlice = createSlice({
@@ -20,10 +21,7 @@ export const petSlice = createSlice({
     initialState: initialState,
     reducers: {
         petSetup(state, action: {payload: IPet, type: string}) {
-            state.id = action.payload.id;
-            state.name = action.payload.name;
-            state.stats = action.payload.stats;
-            state.clothes = action.payload.clothes;
+            state = {...state, ...action.payload};
         },
         petChangedName(state, action: {payload: {newName: string}, type: string}) {
             state.name = action.payload.newName;
@@ -40,13 +38,16 @@ export const petSlice = createSlice({
         petPutOnCloth(state, action: {payload: {clothID: string}, type: string}) {
             state.clothes.push(action.payload.clothID);
         },
-        petPutOffCloth(state, action: {payload: {clothID: string}, type: string}) {
+        petTakeOffCloth(state, action: {payload: {clothID: string}, type: string}) {
             const index = state.clothes.indexOf(action.payload.clothID);
 
             if (index === -1)
                 throw Error("Cloth not found.") //TODO
 
             state.clothes.splice(index);
+        },
+        petToggleSleep(state) {
+            state.isSleeping = !state.isSleeping;
         }
     }
 })
@@ -58,7 +59,8 @@ export const {
     petAddedHappiness,
     petAddedSleep,
     petPutOnCloth,
-    petPutOffCloth
+    petTakeOffCloth,
+    petToggleSleep
 } = petSlice.actions;
 
 export const selectName = (state: any) => {

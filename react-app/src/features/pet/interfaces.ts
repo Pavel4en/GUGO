@@ -10,6 +10,7 @@ export interface IPet {
     name: string,
     stats: IStats,
     clothes: string[],
+    isSleeping: boolean
 }
 
 // Redux interfaces
