@@ -6,12 +6,25 @@ import petClassic from './images/m-classic.png'
 import petSad from './images/m-sad.png'
 import petSleepy from './images/m-sleepy.png'
 
+import {
+    IPet,
+    IPetSetup
+} from "./interfaces";
 
-// interface Statistic {
-//     feed: number,
-//     sleep: number,
-//     happinnes: number
-// }
+import {petAPI} from "./petAPI";
+
+import {
+    petSetup,
+    petChangedName,
+    petAddedSatiety,
+    petAddedSleep,
+    petAddedHappiness,
+    petPutOnCloth,
+    petPutOffCloth
+} from "./petSlice";
+
+import {Dispatch} from "@reduxjs/toolkit";
+
 
 const Global = styled.div`
   * {
@@ -29,6 +42,10 @@ const AppWrapper = styled.div`
   text-align: center;
   flex-direction: column;
 `
+
+const updatePet = () => {
+    petAPI.getPet().then((newPet: IPet) => dispatcher(petSetup(newPet)));
+}
 
 const PetApp = () => {
     return (
@@ -55,13 +72,6 @@ const StyledPetNest = styled.button`
   margin-bottom: 1rem;
 `
 
-
-// передать изображение пета
-// const petNestCharacter = () => {
-//     return (
-//         <img jklnsadojnsafvjklndsafasjldfndsafoj
-//     )
-// }
 
 const PetNest = () => {
     return (
@@ -92,7 +102,7 @@ const StatsList = () => {
     return (
         <StyledStatsList>
             <StyledStatsListItem>
-                Feed: 100%
+                Feed: {}
             </StyledStatsListItem>
             <StyledStatsListItem>
                 Sleepy: 100%
@@ -103,27 +113,6 @@ const StatsList = () => {
         </StyledStatsList>
     )
 }
-
-// const StatsListEntry = ({feed, sleep, happinnes}: Statistic) => {
-
-//     const [FeedStat, setFeedStat] = useState(feed);
-//     const [SleepingStat, setSleepingStat] = useState(sleep);
-//     const [HappinnesStat, setHappinnesStat] = useState(happinnes);
-
-//     return (
-//         <StyledPetStats>
-//             <StyledPetStatsItem contentEditable={false}>
-//                 {feed}
-//             </StyledPetStatsItem>
-//             <StyledPetStatsItem contentEditable={false}>
-//                 {sleep}
-//             </StyledPetStatsItem>
-//             <StyledPetStatsItem contentEditable={false}>
-//                 {happinnes}
-//             </StyledPetStatsItem>
-//         </StyledPetStats>
-//     )
-// }
 
 
 export default PetApp;
