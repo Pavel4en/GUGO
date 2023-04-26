@@ -1,4 +1,10 @@
 flask
+flask-cors
+
 bson
+
 pymongo
+
 openai
+
+bcrypt
