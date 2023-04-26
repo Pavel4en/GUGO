@@ -1,10 +1,13 @@
-import TodoApp from "./features/todo/Todo";
 import React from "react";
-
+import PetApp from "./features/pet/Pet";
+import TodoApp from "./features/todo/Todo";
 
 const App = () => {
     return (
-        <TodoApp/>
+        <>
+            {/* <PetApp/> */}
+            <TodoApp/>
+        </>
     );
 }
 export default App;

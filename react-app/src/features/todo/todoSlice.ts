@@ -1,5 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit"
-import {ITask} from "./interfaces"
+import {
+    ITask
+} from "./interfaces"
 
 
 const initialState = {
@@ -14,7 +16,7 @@ export const todoSlice = createSlice({
         todoUpdated(state, action) {
             state.entities = action.payload;
         },
-        todoAdded(state, action: {payload: ITask, type: string}) {
+        todoAdded(state, action: { payload: ITask, type: string }) {
             state.entities.push(action.payload);
         },
         todoDeleted(state, action) {
@@ -68,7 +70,7 @@ export const {
 } = todoSlice.actions;
 
 export const selectTasks = (state: any) => {
-    return state.todo.entities
+    return state.todo.entities;
 };
 
 export default todoSlice.reducer;
