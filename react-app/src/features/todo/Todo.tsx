@@ -25,7 +25,7 @@ import {Dispatch} from "@reduxjs/toolkit";
 
 
 const Global = createGlobalStyle`
-  body {
+body {
     background-color: #232946;
     color: #fffffe;
     font-family: Arial, sans-serif;
@@ -253,31 +253,39 @@ const TaskSearchForm = () => {
     );
 }
 
-const StyledTaskTable = styled.div`
-  border: 1px solid #b8c1ec;
-  border-radius: 5px;
-  overflow: hidden;
-`
+const StyledTaskTable = styled.table`
+border-collapse: collapse;
+border-radius: 5px;
+overflow: hidden;
+width: 100%;
+table-layout: fixed;
+`;
 
-const StyledTaskTableRow = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  border-bottom: 1px solid #b8c1ec;
-`
+const StyledTaskTableRow = styled.tr`
+border-bottom: 1px solid #b8c1ec;
+`;
 
-const TableCell = styled.div`
-  flex: 1;
-`
-
-const StyledTaskListHeader = styled.div`
+const StyledTableHeaderRow = styled.tr`
   background-color: #eebbc3;
-  padding: 10px;
-  display: flex;
-  font-size: 18px;
-  font-weight: bold;
-  color: #232946;
-`
+  display: table-row;
+`;
+
+const StyledTableCell = styled.td`
+padding: 10px;
+text-align: center;
+min-width: 0;
+`;
+
+const StyledTableHeaderCell = styled.th`
+padding: 10px;
+text-align: center;
+color: #232946;
+font-size: 18px;
+font-weight: bold;
+border: none;
+white-space: nowrap;
+min-width: 0;
+`;
 
 const TaskList = () => {
     const dispatcher = useDispatch();
@@ -291,14 +299,14 @@ const TaskList = () => {
 
     return (
         <StyledTaskTable>
-            <StyledTaskListHeader>
-                <TableCell/>
-                <TableCell>Name</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Difficulty</TableCell>
-                <TableCell>Gems</TableCell>
-                <TableCell/>
-            </StyledTaskListHeader>
+            <StyledTableHeaderRow>
+                <StyledTableHeaderCell/>
+                <StyledTableHeaderCell>Name</StyledTableHeaderCell>
+                <StyledTableHeaderCell>Description</StyledTableHeaderCell>
+                <StyledTableHeaderCell>Difficulty</StyledTableHeaderCell>
+                <StyledTableHeaderCell>Gems</StyledTableHeaderCell>
+                <StyledTableHeaderCell/>
+            </StyledTableHeaderRow>
             {(taskList.length > 0) ? taskComponentList : null}
         </StyledTaskTable>
     );
@@ -341,6 +349,7 @@ const StyledDelete = styled(StyledButton)`
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
+  display: flex;
 
 `
 
@@ -384,14 +393,15 @@ const TaskListEntry = ({_id, description, name, coins, difficulty}: ITask) => {
         <StyledTaskTableRow>
             <StyledTaskListElement>
                 <StyledContent>
-                    <TableCell><StyledSpan contentEditable={false} value={name}/></TableCell>
-                    <TableCell><StyledSpan contentEditable={false} value={description}/></TableCell>
-                    <TableCell><StyledSpan contentEditable={false} value={String(difficulty)}/></TableCell>
-                    <TableCell><StyledSpan contentEditable={false} value={String(coins)}/></TableCell>
+                <StyledTableCell></StyledTableCell>
+                    <StyledTableCell><StyledSpan contentEditable={false} value={name}/></StyledTableCell>
+                    <StyledTableCell><StyledSpan contentEditable={false} value={description}/></StyledTableCell>
+                    <StyledTableCell><StyledSpan contentEditable={false} value={String(difficulty)}/></StyledTableCell>
+                    <StyledTableCell><StyledSpan contentEditable={false} value={String(coins)}/></StyledTableCell>
                 </StyledContent>
                 <StyledAction>
-                    <TableCell><StyledEdit> </StyledEdit></TableCell>
-                    <TableCell><StyledDelete onClick={handleDelete}> </StyledDelete></TableCell>
+                    <StyledTableCell><StyledEdit> </StyledEdit></StyledTableCell>
+                    <StyledTableCell><StyledDelete onClick={handleDelete}> </StyledDelete></StyledTableCell>
                 </StyledAction>
             </StyledTaskListElement>
         </StyledTaskTableRow>
