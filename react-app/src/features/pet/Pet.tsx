@@ -12,11 +12,26 @@ import lamp from './images/pet-button/b-sleep.png'
 import computer from './images/pet-button/b-computer.png'
 import eat from './images/pet-button/b-eat.png'
 
-// interface Statistic {
-//     feed: number,
-//     sleep: number,
-//     happinnes: number
-// }
+import {
+    IPet,
+    IPetSetup
+} from "./interfaces";
+
+import {petAPI} from "./petAPI";
+
+
+import {
+    petSetup,
+    petChangedName,
+    petAddedSatiety,
+    petAddedSleep,
+    petAddedHappiness,
+    petPutOnCloth,
+    petPutOffCloth
+} from "./petSlice";
+
+import {Dispatch} from "@reduxjs/toolkit";
+
 
 const Global = createGlobalStyle`
 * {
@@ -59,6 +74,10 @@ max-width: 800px;
 margin: 0 auto;
 `
 
+const updatePet = () => {
+    petAPI.getPet().then((newPet: IPet) => dispatcher(petSetup(newPet)));
+}
+
 const PetApp = () => {
     return (
         <>
@@ -68,8 +87,8 @@ const PetApp = () => {
                     <Visual>
                         <StyledPetNest>
                         <StatsList/>
-                            </StyledPetNest>  
-                        
+                            </StyledPetNest>
+
                     </Visual>
                     <StatsActions>
                         <StyledEat/>
@@ -122,6 +141,7 @@ background-position: center;
 background-repeat: no-repeat;
 margin-bottom: 1rem;
 
+
 position: relative;
 // top: 50%;
 left: 50%;
@@ -158,7 +178,7 @@ const StatsList = () => {
     return (
         <StyledStatsList>
             <StyledStatsListItem>
-                Feed: 100%
+                Feed: {}
             </StyledStatsListItem>
             <StyledStatsListItem>
                 Sleepy: 100%

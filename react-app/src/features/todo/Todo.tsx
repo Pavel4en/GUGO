@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect, useState} from 'react';
+import React, {Fragment, useEffect} from 'react';
 import styled, {createGlobalStyle} from 'styled-components';
 
 import deleteImage from "./images/delete.png"
