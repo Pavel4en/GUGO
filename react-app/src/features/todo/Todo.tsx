@@ -56,27 +56,41 @@ const AppWrapper = styled.div`
   margin: 0 auto;
   padding: 40px;
 `
+
 const Title = styled.h1`
   text-align: center;
-  font-size: 50px;
-`;
-
+  text-align: center;
+  font-size: 5rem;
+  padding-bottom: 4rem;
+`
 
 const updateTasks = (dispatcher: Dispatch<IUpdateTasks>) => {
     todoAPI.getIncompletedTasks().then((newTasks: ITask[]) => dispatcher(todoUpdated(newTasks)))
 }
 
+const Header = styled.header`
+position: sticky;  
+top: 0;
+background-color: #232946;
+`
 
 const TodoApp = () => {
     return (
         <>
-            <div>
-                <Title>GUGO TTG</Title>
-            </div>
             <Global/>
             <AppWrapper>
-                <TaskManageBar/>
-                <TaskList/>
+                <Title>GUGO TTG</Title>
+                    <Header>    
+                        <TaskManageBar/>
+                        <StyledTaskListHeader>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Description</TableCell>
+                            <TableCell>Difficulty</TableCell>
+                            <TableCell>Gems</TableCell>
+                            <TableCell/>
+                        </StyledTaskListHeader> 
+                    </Header>
+                    <TaskList/>
             </AppWrapper>
         </>
     );
@@ -88,8 +102,9 @@ const StyledTaskManageBar = styled.div`
   width: 100%;
   margin-bottom: 1rem;
   margin-left: -5rem;
-`
 
+  padding-top:0;
+`
 
 const TaskManageBar = () => {
     return (
@@ -178,16 +193,18 @@ const TaskAddForm = () => {
 const StyledTaskSearchForm = styled.form`
   display: flex;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 3rem;
 `
 
 const StyledTaskSearchFromInput = styled(StyledInput)`
   flex: 1;
-  padding: 10px;
+//   padding: 10px;
   background-color: #fffffe;
-  color: #b8c1ec;
+  color: #151515;
   border: none;
-  border-radius: 5px 0 0 5px;
+//   border-radius: 5px 0 0 5px;
+  font-size: 1.25rem;
+  transition: 0.4s;
 `
 
 const StyledTaskSearchFormSubmit = styled(StyledButton)`
@@ -197,6 +214,9 @@ const StyledTaskSearchFormSubmit = styled(StyledButton)`
   color: #232946;
   border: none;
   border-radius: 0 5px 5px 0;
+  transition: 0.4s;
+  font-size: 1.25rem;
+
 `
 
 const TaskSearchForm = () => {
@@ -210,26 +230,48 @@ const TaskSearchForm = () => {
 
 const StyledTaskTable = styled.table`
 border-collapse: collapse;
-border-radius: 5px;
 overflow: hidden;
 width: 100%;
 table-layout: fixed;
-`;
+// border: 1px solid white;
+`
 
 const StyledTaskTableRow = styled.tr`
+  align-items: center;
   border-bottom: 1px solid #b8c1ec;
-`;
+`
+
+const StyledTaskListHeader = styled.div`
+background-color: #eebbc3;
+padding: 10px;
+display: flex;
+font-size: 18px;
+font-weight: bold;
+color: #232946;
+border-radius: 5px;
+position: sticky;  
+top: 0;
+`
 
 const StyledTableHeaderRow = styled.tr`
   background-color: #eebbc3;
   display: table-row;
-`;
+  position: sticky;  
+  top: 0;
+`
+
+const TableCell = styled.div`
+  flex: 1;
+  font-size: 1rem;
+  text-align: center;
+`
 
 const StyledTableCell = styled.td`
   padding: 10px;
   text-align: center;
   min-width: 0;
-`;
+  font-size: 1rem;
+`
 
 const StyledTableHeaderCell = styled.th`
   padding: 10px;
@@ -240,7 +282,7 @@ const StyledTableHeaderCell = styled.th`
   border: none;
   white-space: nowrap;
   min-width: 0;
-`;
+`
 
 const TaskList = () => {
     const dispatcher = useDispatch();
@@ -254,14 +296,6 @@ const TaskList = () => {
 
     return (
         <StyledTaskTable>
-            <StyledTableHeaderRow>
-                <StyledTableHeaderCell/>
-                <StyledTableHeaderCell>Name</StyledTableHeaderCell>
-                <StyledTableHeaderCell>Description</StyledTableHeaderCell>
-                <StyledTableHeaderCell>Difficulty</StyledTableHeaderCell>
-                <StyledTableHeaderCell>Gems</StyledTableHeaderCell>
-                <StyledTableHeaderCell/>
-            </StyledTableHeaderRow>
             {(taskList.length > 0) ? taskComponentList : null}
         </StyledTaskTable>
     );
@@ -271,9 +305,7 @@ const StyledTaskListElement = styled(Fragment)`
   display: flex;
   align-items: center;
   padding: 10px;
-  background-color: #fffffe;
-  color: #232946;
-  border-bottom: 1px solid #b8c1ec;
+  color: white;
 `
 
 const StyledContent = styled(Fragment)`
@@ -312,7 +344,6 @@ const StyledAction = styled.div`
 
 `
 
-
 const StyledSpan = styled(({contentEditable, value = ''}:
                                {
                                    contentEditable: boolean,
@@ -321,7 +352,6 @@ const StyledSpan = styled(({contentEditable, value = ''}:
     return <span className="input" role="textbox" contentEditable={contentEditable}>{value}</span>;
 })`
 `
-
 
 const TaskListEntry = ({_id, description, name, coins, difficulty}: ITask) => {
     const dispatcher = useDispatch();
@@ -348,7 +378,6 @@ const TaskListEntry = ({_id, description, name, coins, difficulty}: ITask) => {
         <StyledTaskTableRow>
             <StyledTaskListElement>
                 <StyledContent>
-                    <StyledTableCell></StyledTableCell>
                     <StyledTableCell><StyledSpan contentEditable={false} value={name}/></StyledTableCell>
                     <StyledTableCell><StyledSpan contentEditable={false} value={description}/></StyledTableCell>
                     <StyledTableCell><StyledSpan contentEditable={false} value={String(difficulty)}/></StyledTableCell>
@@ -362,6 +391,7 @@ const TaskListEntry = ({_id, description, name, coins, difficulty}: ITask) => {
         </StyledTaskTableRow>
     );
 }
+
 
 
 export default TodoApp;
