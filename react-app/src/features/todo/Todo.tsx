@@ -4,11 +4,13 @@ import styled, {createGlobalStyle} from 'styled-components';
 import deleteImage from "./images/delete.png"
 import editImage from "./images/edit.png"
 
-import {
-    ITask, ITaskComponent
-} from "./interfaces";
-
 import {useDispatch, useSelector} from "react-redux";
+import {Dispatch} from "@reduxjs/toolkit";
+
+import {
+    ITask,
+    IUpdateTasks
+} from "./interfaces";
 
 import {
     todoUpdated,
@@ -21,7 +23,7 @@ import {
     selectTasks
 } from "./todoSlice";
 
-import {Dispatch} from "@reduxjs/toolkit";
+import {todoAPI} from "./todoAPI";
 
 
 const Global = createGlobalStyle`
@@ -60,46 +62,12 @@ const Title = styled.h1`
 `;
 
 
-const JSONFromURL = async <TResponse, >(url: string, config: RequestInit = {}): Promise<TResponse> => {
-    try {
-        const response = await fetch(url, config);
-        return await response.json();
-    } catch (error) {
-        // TODO: Adequate exceptions
-        throw Error;
-    }
-}
-
-const parseTasksFromURL = (url: string): Promise<ITask[]> => {
-    return JSONFromURL<ITask[]>(url,
-        {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'}
-        })
-}
-const getCompleteTasks = () => {
-    return parseTasksFromURL('http://localhost:5000/completed_tasks/')
-}
-
-const getIncompleteTasks = () => {
-    return parseTasksFromURL('http://localhost:5000/incompleted_tasks');
-}
-
-interface IUpdateTasks {
-    type: "todo/todoUpdated",
-    payload: ITask[]
-}
-
 const updateTasks = (dispatcher: Dispatch<IUpdateTasks>) => {
-    getIncompleteTasks().then((newTasks: ITask[]) => dispatcher(todoUpdated(newTasks)))
+    todoAPI.getIncompletedTasks().then((newTasks: ITask[]) => dispatcher(todoUpdated(newTasks)))
 }
 
 
 const TodoApp = () => {
-    const editTask = (task: ITaskComponent) => {
-        // TODO
-    }
-
     return (
         <>
             <div>
@@ -167,24 +135,10 @@ const StyledTaskAddFormSubmit = styled(StyledButton)`
   transition: 0.4s;
 `
 
-const StyledTaskListBody = styled(Fragment)`
-`
 const TaskAddForm = () => {
     const dispatcher = useDispatch();
 
     const addTask = (name: string, description: string) => {
-        const sendAddTask = () => {
-            const requestOption = {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    name: name,
-                    description: description
-                })
-            }
-            return fetch('http://localhost:5000/add_task', requestOption)
-        }
-
         dispatcher(todoAdded({
             name: name,
             description: description,
@@ -194,7 +148,8 @@ const TaskAddForm = () => {
             completed: false
         }));
 
-        sendAddTask().then(() => updateTasks(dispatcher));
+        todoAPI.addTask({name: name, description: description})
+            .then(() => updateTasks(dispatcher));
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {

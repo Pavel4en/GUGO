@@ -13,11 +13,10 @@ import computer from './images/pet-button/b-computer.png'
 import eat from './images/pet-button/b-eat.png'
 
 import {
-    IPet,
-    IPetSetup
+    IPet
 } from "./interfaces";
 
-import {petAPI} from "./petAPI";
+import {petAPI} from "./API/petAPI";
 
 
 import {
@@ -27,11 +26,13 @@ import {
     petAddedSleep,
     petAddedHappiness,
     petPutOnCloth,
-    petTakeOffCloth,
-    petToggleSleep
-} from "./petSlice";
+    petRemovedCloth,
+    petToggledSleep,
+    selectName,
+    selectCharacteristics,
+    selectClothes
+} from "./redux/petSlice";
 
-import {Dispatch} from "@reduxjs/toolkit";
 import {useDispatch} from "react-redux";
 
 
@@ -83,12 +84,11 @@ const PetApp = () => {
         <>
             <Global/>
             <AppWrapper>
-                <StyledPetsName>DOLBAEB</StyledPetsName>
+                <PetNameStyle>DOLBAEB</PetNameStyle>
                 <Visual>
                     <StyledPetNest>
                         <StatsList/>
                     </StyledPetNest>
-
                 </Visual>
                 <StatsActions>
                     <StyledEatButton/>
@@ -100,7 +100,7 @@ const PetApp = () => {
     );
 }
 
-const StyledPetsName = styled.div`
+const PetNameStyle = styled.div`
   font-size: 3rem;
   margin-bottom: 2rem;
   font-weight: 700;
@@ -114,6 +114,14 @@ const StyledPetsName = styled.div`
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `
+
+const PetName = () => {
+    return (
+        <PetNameStyle>
+
+        </PetNameStyle>
+    )
+}
 
 const LampButtonStyle = styled(StyledButton)`
   background-image: url(${lamp});
@@ -133,10 +141,9 @@ const LampButton = () => {
     const toggleSleep = (event: React.FormEvent<HTMLButtonElement>) => {
         event.preventDefault();
 
-        dispatcher(petToggleSleep());
+        dispatcher(petToggledSleep());
 
-        petAPI.sendSleepToggled()
-            .then(() => dispatcher(petToggleSleep()))
+        petAPI.sendToggleSleep();
     }
 
     return <LampButtonStyle onClick={toggleSleep}/>;
@@ -163,13 +170,6 @@ const StyledPetNest = styled.div`
   // margin-left: 50%;
   transform: translate(-50%, 0);
 `
-
-const PetNest = () => {
-    return (
-        <StyledPetNest>
-        </StyledPetNest>
-    )
-}
 
 const StyledStatsList = styled.div`
   margin-left: 100%;
