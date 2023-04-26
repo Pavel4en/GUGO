@@ -7,10 +7,9 @@ import editImage from "./images/edit.png"
 import {useDispatch, useSelector} from "react-redux";
 import {Dispatch} from "@reduxjs/toolkit";
 
-import {
-    ITask,
-    IUpdateTasks
-} from "./interfaces";
+import {IUpdateTasks} from "./redux/interfacesRedux"
+
+import {ITask} from "./interfaces";
 
 import {
     todoUpdated,
@@ -21,7 +20,7 @@ import {
     todoLoading,
     todoToggled,
     selectTasks
-} from "./todoSlice";
+} from "./redux/todoSlice";
 
 import {todoAPI} from "./todoAPI";
 

@@ -1,7 +1,7 @@
 import {
     IAPIAnswer
 } from "../../utils/webInterfaces";
-import {IPet} from "../pet/interfaces";
+// import {IPet} from "../pet/interfaces";
 
 export interface ITask {
     _id: string,

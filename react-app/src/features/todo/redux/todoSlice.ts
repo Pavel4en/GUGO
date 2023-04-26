@@ -1,7 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit"
 import {
     ITask
-} from "./interfaces"
+} from "../interfaces"
 
 
 const initialState = {
