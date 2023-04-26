@@ -13,3 +13,5 @@ items_collection = db.items
 food_collection = db.food
 # Создаем коллекцию питомцев
 players_collection = db.players
+# Создаем коллекцию юзеров
+users = db.users
