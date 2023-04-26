@@ -57,6 +57,7 @@ const AppWrapper = styled.div`
 const Title = styled.h1`
   text-align: center;
   font-size: 50px;
+  padding-bottom: 4rem;
 `;
 
 const JSONFromURL = async <TResponse, >(url: string, config: RequestInit = {}): Promise<TResponse> => {
@@ -109,20 +110,18 @@ const TodoApp = () => {
         <>
             <Global/>
             <AppWrapper>
-                <Header>
-                    <div>
-                        <Title>GUGO TTG</Title>
-                    </div>
-                    <TaskManageBar/>
-                    <StyledTaskListHeader>
-                        <TableCell/>
-                        <TableCell>Name</TableCell>
-                        <TableCell>Description</TableCell>
-                        <TableCell>Difficulty</TableCell>
-                        <TableCell>Gems</TableCell>
-                        <TableCell/>
-                    </StyledTaskListHeader> 
-                </Header>
+                <Title>GUGO TTG</Title>
+                    <Header>    
+                        <TaskManageBar/>
+                        <StyledTaskListHeader>
+                            <TableCell/>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Description</TableCell>
+                            <TableCell>Difficulty</TableCell>
+                            <TableCell>Gems</TableCell>
+                            <TableCell/>
+                        </StyledTaskListHeader> 
+                    </Header>
                     <TaskList/>
             </AppWrapper>
         </>
@@ -131,6 +130,7 @@ const TodoApp = () => {
 
 const StyledTaskManageBar = styled.div`
 padding: 5rem;
+padding-top:0;
 width: 100%;
 margin-bottom: 1rem;
 margin-left: -5rem;
@@ -236,16 +236,18 @@ const TaskAddForm = () => {
 const StyledTaskSearchForm = styled.form`
   display: flex;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 3rem;;
 `
 
 const StyledTaskSearchFromInput = styled(StyledInput)`
   flex: 1;
-  padding: 10px;
+//   padding: 10px;
   background-color: #fffffe;
-  color: #b8c1ec;
+  color: #151515;
   border: none;
-  border-radius: 5px 0 0 5px;
+//   border-radius: 5px 0 0 5px;
+  font-size: 1.25rem;
+  transition: 0.4s;
 `
 
 const StyledTaskSearchFormSubmit = styled(StyledButton)`
@@ -255,6 +257,8 @@ const StyledTaskSearchFormSubmit = styled(StyledButton)`
   color: #232946;
   border: none;
   border-radius: 0 5px 5px 0;
+  transition: 0.4s;
+  font-size: 1.25rem;
 `
 
 const TaskSearchForm = () => {
@@ -270,6 +274,7 @@ const StyledTaskTable = styled.div`
   border: 1px solid #b8c1ec;
   border-radius: 5px;
   overflow: hidden;
+  
 `
 
 const StyledTaskTableRow = styled.div`
@@ -281,6 +286,7 @@ const StyledTaskTableRow = styled.div`
 
 const TableCell = styled.div`
   flex: 1;
+  font-size: 1rem;
 `
 
 const StyledTaskListHeader = styled.div`
@@ -309,7 +315,6 @@ const TaskList = () => {
 
     return (
         <StyledTaskTable>
-            
             {(taskList.length > 0) ? taskComponentList : null}
         </StyledTaskTable>
     );
@@ -326,6 +331,7 @@ const StyledTaskListElement = styled(Fragment)`
 
 const StyledContent = styled(Fragment)`
   flex: 1;
+  
 `
 
 const StyledEdit = styled(StyledButton)`
@@ -340,6 +346,7 @@ const StyledEdit = styled(StyledButton)`
   background-position: center;
   background-size: 24px 24px;
   display: flex;
+  
 `
 
 const StyledDelete = styled(StyledButton)`
@@ -352,12 +359,12 @@ const StyledDelete = styled(StyledButton)`
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
+  
 `
 
 const StyledAction = styled.div`
 
 `
-
 
 const StyledSpan = styled(({contentEditable, value = ''}:
                                {
@@ -367,7 +374,6 @@ const StyledSpan = styled(({contentEditable, value = ''}:
     return <span className="input" role="textbox" contentEditable={contentEditable}>{value}</span>;
 })`
 `
-
 
 const TaskListEntry = ({_id, description, name, coins, difficulty}: ITask) => {
     const dispatcher = useDispatch();
@@ -407,6 +413,8 @@ const TaskListEntry = ({_id, description, name, coins, difficulty}: ITask) => {
         </StyledTaskTableRow>
     );
 }
+
+
 
 
 export default TodoApp;
