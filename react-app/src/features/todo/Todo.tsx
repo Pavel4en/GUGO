@@ -23,7 +23,6 @@ import {
 
 import {Dispatch} from "@reduxjs/toolkit";
 
-
 const Global = createGlobalStyle`
   body {
     background-color: #232946;
@@ -54,11 +53,11 @@ const AppWrapper = styled.div`
   margin: 0 auto;
   padding: 40px;
 `
+
 const Title = styled.h1`
   text-align: center;
   font-size: 50px;
 `;
-
 
 const JSONFromURL = async <TResponse, >(url: string, config: RequestInit = {}): Promise<TResponse> => {
     try {
@@ -77,6 +76,7 @@ const parseTasksFromURL = (url: string): Promise<ITask[]> => {
             headers: {'Content-Type': 'application/json'}
         })
 }
+
 const getCompleteTasks = () => {
     return parseTasksFromURL('http://localhost:5000/complete_tasks/')
 }
@@ -94,6 +94,11 @@ const updateTasks = (dispatcher: Dispatch<IUpdateTasks>) => {
     getIncompleteTasks().then((newTasks: ITask[]) => dispatcher(todoUpdated(newTasks)))
 }
 
+const Header = styled.header`
+position: sticky;  
+top: 0;
+background-color: #232946;
+`
 
 const TodoApp = () => {
     const editTask = (task: ITaskComponent) => {
@@ -102,26 +107,34 @@ const TodoApp = () => {
 
     return (
         <>
-            <div>
-                <Title>GUGO TTG</Title>
-            </div>
             <Global/>
             <AppWrapper>
-                <TaskManageBar/>
-                <TaskList/>
+                <Header>
+                    <div>
+                        <Title>GUGO TTG</Title>
+                    </div>
+                    <TaskManageBar/>
+                    <StyledTaskListHeader>
+                        <TableCell/>
+                        <TableCell>Name</TableCell>
+                        <TableCell>Description</TableCell>
+                        <TableCell>Difficulty</TableCell>
+                        <TableCell>Gems</TableCell>
+                        <TableCell/>
+                    </StyledTaskListHeader> 
+                </Header>
+                    <TaskList/>
             </AppWrapper>
         </>
     );
 }
 
 const StyledTaskManageBar = styled.div`
-  // display: flex;
-  padding: 5rem;
-  width: 100%;
-  margin-bottom: 1rem;
-  margin-left: -5rem;
+padding: 5rem;
+width: 100%;
+margin-bottom: 1rem;
+margin-left: -5rem;
 `
-
 
 const TaskManageBar = () => {
     return (
@@ -271,12 +284,17 @@ const TableCell = styled.div`
 `
 
 const StyledTaskListHeader = styled.div`
-  background-color: #eebbc3;
-  padding: 10px;
-  display: flex;
-  font-size: 18px;
-  font-weight: bold;
-  color: #232946;
+background-color: #eebbc3;
+padding: 10px;
+display: flex;
+font-size: 18px;
+font-weight: bold;
+color: #232946;
+border-radius: 5px;
+position: sticky;  
+top: 0;
+
+
 `
 
 const TaskList = () => {
@@ -291,14 +309,7 @@ const TaskList = () => {
 
     return (
         <StyledTaskTable>
-            <StyledTaskListHeader>
-                <TableCell/>
-                <TableCell>Name</TableCell>
-                <TableCell>Description</TableCell>
-                <TableCell>Difficulty</TableCell>
-                <TableCell>Gems</TableCell>
-                <TableCell/>
-            </StyledTaskListHeader>
+            
             {(taskList.length > 0) ? taskComponentList : null}
         </StyledTaskTable>
     );

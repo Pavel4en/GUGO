@@ -5,8 +5,8 @@ import TodoApp from "./features/todo/Todo";
 const App = () => {
     return (
         <>
-            <PetApp/>
-            {/*<TodoApp/>*/}
+            {/* <PetApp/> */}
+            <TodoApp/>
         </>
     );
 }
