@@ -13,6 +13,8 @@ import lamp from './images/pet-button/b-sleep.png'
 import computer from './images/pet-button/b-computer.png'
 import eat from './images/pet-button/b-eat.png'
 
+import shop from './images/shop/shop.png'
+
 import {
     IPet
 } from "./interfaces";
@@ -42,6 +44,7 @@ const Global = createGlobalStyle`
   * {
     margin: 0;
     box-sizing: border-box;
+    transition: 0.4s;
   }
 
   body {
@@ -95,38 +98,72 @@ const updatePet = () => {
 
 const SwithToTodo = styled.button`
 
-  margin: 4rem;
+margin: 4rem;
+color: #1D9AF2;
+background-color: #292D3E;
+border: 1px solid #1D9AF2;
+border-radius: 0.5rem;
+padding: 24px 88px;
+cursor: pointer;
+height: 5rem;
+text-align: center;
+justify-content: center;
+justify-item: center;
+transition: 0.4s;
+font-size: 1.5rem;
 
-  color: #1D9AF2;
-  background-color: #292D3E;
-  border: 1px solid #1D9AF2;
-  border-radius: 0.5rem;
-  padding: 24px 88px;
-  cursor: pointer;
-  height: 5rem;
-  text-align: center;
-  justify-content: center;
-  justify-item: center;
-  transition: 0.4s;
-  font-size: 1.5rem;
-  box-shadow: 0 0 4px #999;
-  outline: none;
-  background-position: center;
-  transition: background 0.8s;
+outline: none;
+background-position: center;
+transition: background 0.8s;
 
-  &:hover{
-  background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%)
-   center/15000%;
-  color: white;
+&:hover{
+background: #47a7f5 radial-gradient(circle, transparent 1%, #eebbc3 1%)
+ center/15000%;
+color: white;
 
-  &:active{
-  background-color: #292d3e;
-  background-size: 100%;
-  transition: background 0s;
+&:active{
+background-color: #292d3e;
+background-size: 100%;
+transition: background 0s;
 
-  box-shadow: 0 3px 0 #00823f;
-  top: 3px;
+box-shadow: 0 3px 0 #00823f;
+top: 3px;
 `
+
+const StyledShopBar = styled.div`
+display: flex;
+margin-bottom: 6rem;
+border-radius: 0.5rem;
+box-shadow: 0 0 1rem #eebbc3;
+`
+
+
+const BalanceBar = styled.label`
+font-size: 3rem;
+color: white;
+justify-item: center;
+
+margin-right: 2rem;
+`
+
+const Shop = styled.button`
+  background-color: #eebbc3;
+  border-radius: 5px;
+  background-image: url(${shop});
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 3rem 3rem;
+  display: flex;
+
+  border-radius: 4px;
+  padding: 0 1.4rem;
+  cursor: pointer;
+  height: 3rem;
+  transition: all 0.2s ease-in-out;
+
+`
+
+
 
 const PetApp = () => {
     return (
@@ -134,6 +171,10 @@ const PetApp = () => {
             <Global/>
                 <SwithToTodo>ToDo</SwithToTodo>
             <AppWrapper>
+                    <StyledShopBar>
+                      <BalanceBar>1.000.000 денег</BalanceBar>
+                      <Shop/>
+                    </StyledShopBar>
                 <PetNameStyle>Мой Мышь</PetNameStyle>
                 <Visual>
                     <StyledPetNest>
@@ -165,7 +206,7 @@ const PetNameStyle = styled.div`
   border: none;
   outline: none;
 
-  background: -webkit-linear-gradient(white, #eebbc3);
+  background:  #eebbc3;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 
@@ -314,5 +355,8 @@ const StyledPetNest = styled.div`
   left: 50%;
   transform: translate(-50%, 0);
 `
+
+
+
 
 export default PetApp;

@@ -55,7 +55,7 @@ const StyledButton = styled.button`
 const AppWrapper = styled.div`
   max-width: 800px;
   margin: 0 auto;
-  padding: 40px;
+  // padding: 40px;
 `
 
 const Title = styled.h1`
@@ -76,36 +76,39 @@ background-color: #232946;
 `
 
 const SwitchToPet = styled(StyledButton)`
-  margin: 4rem 85%;
-  color: #1D9AF2;
-  background-color: #292D3E;
-  border: 1px solid #1D9AF2;
-  border-radius: 0.5rem;
-  padding: 24px 88px;
-  cursor: pointer;
-  height: 5rem;
-  text-align: center;
-  justify-content: center;
-  justify-item: center;
-  transition: 0.4s;
-  font-size: 1.5rem;
-  box-shadow: 0 0 4px #999;
-  outline: none;
-  background-position: center;
-  transition: background 0.8s;
+margin-right: 4rem;
+margin-left: 4rem;
+margin-top: 4rem;
 
-  &:hover{
-  background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%)
-   center/15000%;
-  color: white;
+color: #1D9AF2;
+background-color: #292D3E;
+border: 1px solid #1D9AF2;
+border-radius: 0.5rem;
+padding: 24px 88px;
+cursor: pointer;
+height: 5rem;
+text-align: center;
+justify-content: center;
+justify-item: center;
+transition: 0.4s;
+font-size: 1.5rem;
+box-shadow: 0 0 4px #eebbc3;
+outline: none;
+background-position: center;
+transition: background 0.8s;
 
-  &:active{
-  background-color: #292d3e;
-  background-size: 100%;
-  transition: background 0s;
+&:hover{
+background: #47a7f5 radial-gradient(circle, transparent 1%, #eebbc3 1%)
+ center/15000%;
+color: white;
 
-  box-shadow: 0 3px 0 #00823f;
-  top: 3px;
+&:active{
+background-color: #292d3e;
+background-size: 100%;
+transition: background 0s;
+
+box-shadow: 0 3px 0 #00823f;
+top: 3px;
 `
 
 const TodoApp = () => {
@@ -240,11 +243,9 @@ const StyledTaskSearchForm = styled.form`
 
 const StyledTaskSearchFromInput = styled(StyledInput)`
   flex: 1;
-//   padding: 10px;
   background-color: #fffffe;
   color: #151515;
   border: none;
-//   border-radius: 5px 0 0 5px;
   font-size: 1.25rem;
   transition: 0.4s;
 `
@@ -283,7 +284,6 @@ border-collapse: collapse;
 overflow: hidden;
 width: 100%;
 table-layout: fixed;
-// border: 1px solid white;
 `
 
 const StyledTaskTableRow = styled.tr`

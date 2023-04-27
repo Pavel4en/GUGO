@@ -7,8 +7,8 @@ import RegPage from "./features/authorization/Reg";
 const App = () => {
     return (
         <>
-            {/* <PetApp/> */}
-            <TodoApp/>
+            <PetApp/>
+            {/* <TodoApp/> */}
             {/* <AuthPage/> */}
             {/* <RegPage/> */}
         </>
