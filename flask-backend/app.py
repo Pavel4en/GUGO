@@ -203,6 +203,19 @@ def get_all_game_food():
     return AppResponse("ok", "", gf.get_all_food_as_dicts()).to_dict()
 
 
+@app.route("/todoapi/give_happiness", methods=['POST'])
+@exc_handler
+def give_happiness():
+    login_player = auth_checker()
+    if type(login_player) is dict:
+        return login_player
+
+    happiness_gave = 10
+    login_player.pet.happiness += happiness_gave
+    login_player.save()
+    return AppResponse("ok", "", {}).to_dict()
+
+
 # Получить список всех существующих вещей в игре
 #
 # INPUT:
