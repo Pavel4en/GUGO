@@ -1,6 +1,5 @@
-import React, {ButtonHTMLAttributes, Fragment, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styled, {createGlobalStyle, keyframes} from 'styled-components';
-import {Keyframes} from 'styled-components';
 
 import petHappy from './images/pet-pet/m-happy.png'
 import petClassic from './images/pet-pet/m-classic.png'
@@ -15,10 +14,6 @@ import eat from './images/pet-button/b-eat.png'
 
 import shop from './images/shop/shop.png'
 
-import {
-    IPet
-} from "./interfaces";
-
 import {petAPI} from "./API/petAPI";
 
 
@@ -32,12 +27,19 @@ import {
     petRemovedCloth,
     petToggledSleep,
     selectName,
-    selectCharacteristics,
-    selectClothes
+    selectStats,
+    selectClothes,
+    petChangedMood,
+    petReducedSatiety,
+    petReducedHappiness,
+    petReducedSleep,
+    selectMood
 } from "./redux/petSlice";
 
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {Link} from "react-router-dom";
+
+import {IAPIPet} from "./API/interfacesAPI";
 
 
 const Global = createGlobalStyle`
@@ -89,68 +91,60 @@ const AppWrapper = styled.div`
   margin: 0 auto;
 `
 
-const updatePet = () => {
-    // petAPI.getPet().then((newPet: IPet) => dispatcher(petSetup(newPet)));
-}
-
 const SwitchToTODO = styled.button`
-margin: 4rem;
-color: #1D9AF2;
-background-color: #292D3E;
-border: 1px solid #1D9AF2;
-border-radius: 0.5rem;
-padding: 24px 88px;
-cursor: pointer;
-height: 5rem;
-text-align: center;
-justify-content: center;
-font-size: 1.5rem;
+  margin: 4rem;
+  color: #1D9AF2;
+  background-color: #292D3E;
+  border: 1px solid #1D9AF2;
+  border-radius: 0.5rem;
+  padding: 24px 88px;
+  cursor: pointer;
+  height: 5rem;
+  text-align: center;
+  justify-content: center;
+  font-size: 1.5rem;
 
-outline: none;
-background-position: center;
-transition: background 0.8s;
+  outline: none;
+  background-position: center;
+  transition: background 0.8s;
 
-&:hover{
-background: #47a7f5 radial-gradient(circle, transparent 1%, #eebbc3 1%)
- center/15000%;
-color: white;
+  &:hover {
+    background: #47a7f5 radial-gradient(circle, transparent 1%, #eebbc3 1%)
+      center/15000%;
+    color: white;
   }
 
-&:active{
-background-color: #292d3e;
-background-size: 100%;
-transition: background 0s;
+  &:active {
+    background-color: #292d3e;
+    background-size: 100%;
+    transition: background 0s;
 
-box-shadow: 0 3px 0 #00823f;
-top: 3px;
+    box-shadow: 0 3px 0 #00823f;
+    top: 3px;
   }
 `
 
 const StyledShopBar = styled.div`
-display: flex;
-margin-bottom: 6rem;
-border-radius: 0.5rem;
-box-shadow: 0 0 1rem #eebbc3;
+  display: flex;
+  margin-bottom: 6rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 1rem #eebbc3;
 `
 
 
 const BalanceBar = styled.label`
-font-size: 3rem;
-color: white;
-justify-item: center;
-
-margin-right: 2rem;
+  font-size: 3rem;
+  color: white;
+  margin-right: 2rem;
 `
 
 const Shop = styled.button`
   background-color: #eebbc3;
-  border-radius: 5px;
   background-image: url(${shop});
   background-repeat: no-repeat;
   background-position: center;
   background-size: 3rem 3rem;
   display: flex;
-
   border-radius: 4px;
   padding: 0 1.4rem;
   cursor: pointer;
@@ -160,8 +154,14 @@ const Shop = styled.button`
 `
 
 
-
 const PetApp = () => {
+    const dispatcher = useDispatch();
+
+    useEffect(() => {
+        petAPI.getPet()
+            .then((newPet: IAPIPet) => dispatcher(petSetup(newPet)));
+    }, [dispatcher])
+
     return (
         <>
             <Global/>
@@ -169,15 +169,15 @@ const PetApp = () => {
                 <SwitchToTODO>TODO</SwitchToTODO>
             </Link>
             <AppWrapper>
-                    <StyledShopBar>
-                      <BalanceBar>1.000.000 денег</BalanceBar>
-                      <Shop/>
-                    </StyledShopBar>
+                <StyledShopBar>
+                    <BalanceBar>1.000.000 денег</BalanceBar>
+                    <Shop/>
+                </StyledShopBar>
                 <PetNameStyle>Мой Мышь</PetNameStyle>
                 <Visual>
-                    <StyledPetNest>
+                    <PetNest>
                         <StatsList/>
-                    </StyledPetNest>
+                    </PetNest>
                 </Visual>
                 <StatsActions>
                     <StyledEatButton/>
@@ -207,21 +207,13 @@ const PetNameStyle = styled.div`
   border: none;
   outline: none;
 
-  background:  #eebbc3;
+  background: #eebbc3;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 
   animation-name: ${leFadeIn};
   animation-duration: 2s;
 `
-
-const PetName = () => {
-    return (
-        <PetNameStyle>
-
-        </PetNameStyle>
-    )
-}
 
 const LampButtonStyle = styled(StyledButton)`
   background-image: url(${lamp});
@@ -270,7 +262,6 @@ const StatsActions = styled.div`
   justify-content: center;
   text-align: center;
   background-position: center;
-
   margin-left: 6rem;
   margin-right: 1rem;
 
@@ -299,66 +290,69 @@ const StyledStatsListItem = styled(StatsListItem)`
 `
 
 const StatsList = () => {
-    const [food, setFood] = useState(100);
-    const [coffee, setCoffee] = useState(100);
-    const [positive, setPositive] = useState(100);
-    const [pet_mood, setMood] = useState("happy");
+    const [statsTimer, setStatsTimer]: [any, any] = useState();
+    const {satiety, caffeine, happiness} = useSelector(selectStats);
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            setFood((prevFood) => Math.max(0, prevFood - 10));
-            setCoffee((prevCoffee) => Math.max(0, prevCoffee - 7));
-            setPositive((prevPositive) => Math.max(0, prevPositive - 5));
-        }, 5000);
-        return () => clearInterval(interval);
+        petAPI.getPet()
+            .then((response) => {
+                return {
+                    hungerPerSec: response.data.hungerPerSec,
+                    caffeinePerSec: response.data.caffeinePerSec,
+                    happinessPerSec: response.data.happinessPerSec
+                }
+            })
+            .then((stats) => setInterval(() => {
+                    petReducedSatiety({amount: stats.hungerPerSec});
+                    petReducedSleep({amount: stats.caffeinePerSec});
+                    petReducedHappiness({amount: stats.happinessPerSec});
+                    updateMood()
+                }, 1000)
+            )
+            .then((timer) => setStatsTimer(timer));
+        return () => clearInterval(statsTimer);
     }, []);
 
-    useEffect(() => {
-        updateMood();
-    }, [food, coffee, positive]);
-
     function updateMood() {
-        if (food < 50) {
-            setMood("petSad");
-        } else if (coffee > 80) {
-            setMood("petSleepy");
-        } else if (positive > 70) {
-            setMood("petHappy");
+        if (satiety < 50) {
+            petChangedMood({newMood: "petHungry"})
+        } else if (caffeine < 50) {
+            petChangedMood({newMood: "petSleepy"});
+        } else if (happiness < 50) {
+            petChangedMood({newMood: "petHappy"});
         } else {
-            setMood("normal");
+            petChangedMood({newMood: "petClassic"});
         }
     }
 
     return (
         <StyledStatsList>
-            <StyledStatsListItem label={`Еда: ${food}%`}/>
-            <StyledStatsListItem label={`Кофеин: ${coffee}%`}/>
-            <StyledStatsListItem label={`Позитивчик: ${positive}%`}/>
-            <StyledStatsListItem label={`Настроение: ${pet_mood}`}/>
+            <StyledStatsListItem label={`Еда: ${satiety}%`}/>
+            <StyledStatsListItem label={`Кофеин: ${caffeine}%`}/>
+            <StyledStatsListItem label={`Позитивчик: ${happiness}%`}/>
         </StyledStatsList>
     );
 };
 
 const StyledPetNest = styled.div`
-
   transition: 0.4s;
-  background-image: url(${petSad});
-
-
+  background-image: url(${(props: {mood: string}) => props.mood});
   width: 30rem;
   height: 30rem;
   background-size: 30rem;
   background-position: center;
   background-repeat: no-repeat;
   margin-bottom: 1rem;
-
-
   position: relative;
   left: 50%;
   transform: translate(-50%, 0);
 `
 
+const PetNest = ({children}: {children?: React.ReactElement<any, any>}) => {
+    const mood = useSelector(selectMood);
 
+    return <StyledPetNest mood={mood}>{children}</StyledPetNest>
+}
 
 
 export default PetApp;

@@ -2,6 +2,7 @@ import {createSlice} from "@reduxjs/toolkit"
 import {
     IPet
 } from "../interfaces"
+import {IAPIPet} from "../API/interfacesAPI";
 
 
 const initialState: IPet = {
@@ -9,36 +10,46 @@ const initialState: IPet = {
     name: "",
     stats: {
         satiety: 100,
-        sleep: 100,
+        caffeine: 100,
         happiness: 100
     },
     clothes: [] as string[],
-    isSleeping: false
+    isSleeping: false,
+    mood: "normal"
 }
 
 export const petSlice = createSlice({
     name: 'pet',
     initialState: initialState,
     reducers: {
-        petSetup(state, action: {payload: IPet, type: string}) {
+        petSetup(state, action: { payload: IAPIPet, type: string }) {
             state = {...state, ...action.payload};
         },
-        petChangedName(state, action: {payload: {newName: string}, type: string}) {
+        petChangedName(state, action: { payload: { newName: string }, type: string }) {
             state.name = action.payload.newName;
         },
-        petAddedSatiety(state, action: {payload: {amount: number}, type: string}) {
+        petAddedSatiety(state, action: { payload: { amount: number }, type: string }) {
             state.stats.satiety += action.payload.amount;
         },
-        petAddedSleep(state, action: {payload: {amount: number}, type: string}) {
-            state.stats.sleep += action.payload.amount;
+        petAddedSleep(state, action: { payload: { amount: number }, type: string }) {
+            state.stats.caffeine += action.payload.amount;
         },
-        petAddedHappiness(state, action: {payload: {amount: number}, type: string}) {
+        petAddedHappiness(state, action: { payload: { amount: number }, type: string }) {
             state.stats.happiness += action.payload.amount;
         },
-        petPutOnCloth(state, action: {payload: {clothID: string}, type: string}) {
+        petReducedSatiety(state, action: { payload: { amount: number }, type: string }) {
+            state.stats.satiety -= action.payload.amount;
+        },
+        petReducedSleep(state, action: { payload: { amount: number }, type: string }) {
+            state.stats.caffeine -= action.payload.amount;
+        },
+        petReducedHappiness(state, action: { payload: { amount: number }, type: string }) {
+            state.stats.happiness -= action.payload.amount;
+        },
+        petPutOnCloth(state, action: { payload: { clothID: string }, type: string }) {
             state.clothes.push(action.payload.clothID);
         },
-        petRemovedCloth(state, action: {payload: {clothID: string}, type: string}) {
+        petRemovedCloth(state, action: { payload: { clothID: string }, type: string }) {
             const index = state.clothes.indexOf(action.payload.clothID);
 
             if (index === -1)
@@ -48,6 +59,9 @@ export const petSlice = createSlice({
         },
         petToggledSleep(state) {
             state.isSleeping = !state.isSleeping;
+        },
+        petChangedMood(state, action: { payload: { newMood: string }, type: string }) {
+            state.mood = action.payload.newMood;
         }
     }
 })
@@ -58,21 +72,29 @@ export const {
     petAddedSatiety,
     petAddedHappiness,
     petAddedSleep,
+    petReducedSatiety,
+    petReducedHappiness,
+    petReducedSleep,
     petPutOnCloth,
     petRemovedCloth,
-    petToggledSleep
+    petToggledSleep,
+    petChangedMood
 } = petSlice.actions;
 
 export const selectName = (state: any) => {
     return state.pet.name;
 }
 
-export const selectCharacteristics = (state: any) => {
+export const selectStats = (state: any) => {
     return state.pet.stats;
 }
 
 export const selectClothes = (state: any) => {
     return state.pet.clothes;
 };
+
+export const selectMood = (state: any) => {
+    return state.pet.mood;
+}
 
 export default petSlice.reducer;

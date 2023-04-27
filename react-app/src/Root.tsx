@@ -1,19 +1,30 @@
-import {Outlet, redirect} from "react-router-dom";
-import {authAPI} from "./features/authorization/authAPI";
-import {useEffect} from "react";
+import {Navigate, Outlet, useLocation} from "react-router-dom";
+import {useAuthStatus} from "./features/authorization/hooks";
+
+
+const RequireAuth = ({children}: { children?: JSX.Element }) => {
+    const location = useLocation();
+    const authStatus = useAuthStatus().value;
+
+    return (
+        <>{
+            !authStatus &&
+            location.pathname !== "/register" &&
+            location.pathname !== "/login" ?
+                <Navigate to={"/login"}/> : children
+        }
+        </>
+    )
+}
+
 
 const Root = () => {
-    useEffect(
-        () => {
-            authAPI.getAuth()
-                .then((answer) => {
-                    if (!answer.data.auth)
-                        redirect('/register');
-                });
-        }
-    , []);
+    const location = useLocation();
+
     return (
         <>
+            <RequireAuth/>
+            {location.pathname === '/' ? <Navigate to={"/todo"}/> : null}
             <Outlet/>
         </>
     );

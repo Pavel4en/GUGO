@@ -19,7 +19,7 @@ const router = createBrowserRouter([
         errorElement: <div>jostkiy oshibka da??</div>, //TODO
         children: [
             {
-                path: "/registration",
+                path: "/register",
                 element: <RegistrationApp/>
             },
             {

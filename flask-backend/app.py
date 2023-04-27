@@ -18,7 +18,7 @@ import bcrypt
 app = Flask(__name__)
 
 # Хедеры для ориджина
-cors = CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
+cors = CORS(app, resources={r"/todoapi/*": {"origins": "http://localhost:3000/*"}})
 
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
@@ -170,6 +170,7 @@ def get_pet_data():
 def get_auth():
     login_player = auth_checker()
     return AppResponse("ok", "", {"auth": not type(login_player) is dict}).to_dict()
+    # return AppResponse("ok", "", {"auth": True}).to_dict() # TODO
 
 
 # Получить список всей существующей еды в игре

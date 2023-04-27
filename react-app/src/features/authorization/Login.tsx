@@ -1,5 +1,10 @@
 import React from 'react';
 import styled, {createGlobalStyle} from 'styled-components';
+import {sendPostOnURL} from "../../utils/webUtils";
+import {authAPI} from "./authAPI";
+import {useNavigate} from "react-router";
+import {useAuthStatus} from "./hooks";
+import {Link, Navigate} from "react-router-dom";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -77,7 +82,10 @@ const Button = styled.button`
   }
 `
 
-const AuthPage: React.FC = () => {
+const LoginApp = () => {
+    const navigate = useNavigate();
+    const authStatus = useAuthStatus();
+
     const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const input = event.target.value;
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input)) {
@@ -98,20 +106,43 @@ const AuthPage: React.FC = () => {
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        // TODO
+
+        const target = event.target as typeof event.target & {
+            email: { value: string },
+            password: { value: string }
+        }
+
+        const data = {
+            username: target.email.value,
+            password: target.password.value
+        }
+
+        authAPI.sendLogin(data)
+            .then((response) => {
+                if (response.status !== 'ok') {
+                    console.log('auth failed');
+                } else {
+                    authStatus.checkAuth()
+                        .then(() => navigate('/'));
+                } // TODO login failed pop-up
+            })
     };
 
     return (
         <>
+            {authStatus.value ? <Navigate to={"/"}/> : null}
             <GlobalStyle/>
             <Container>
                 <Title>Authorization</Title>
                 <Form onSubmit={handleSubmit}>
-                    <Input type="email" placeholder="Email" required onChange={handleEmailChange}/>
-                    <Input type="password" placeholder="Password" required onChange={handlePasswordChange}/>
+                    <Input type="email" placeholder="Email" name="email" required onChange={handleEmailChange}/>
+                    <Input type="password" placeholder="Password" name="password" required
+                           onChange={handlePasswordChange}/>
                     <ButtonContainer>
                         <Button type="submit">Login</Button>
-                        <Button>Register</Button>
+                        <Link to={"/register"}>
+                            <Button>Register</Button>
+                        </Link>
                     </ButtonContainer>
                 </Form>
             </Container>
@@ -119,4 +150,4 @@ const AuthPage: React.FC = () => {
     );
 };
 
-export default AuthPage;
+export default LoginApp;

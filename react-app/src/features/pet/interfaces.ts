@@ -3,7 +3,7 @@ import {IAPIAnswer} from "../../utils/webInterfaces";
 
 export interface IStats {
     satiety: number,
-    sleep: number,
+    caffeine: number,
     happiness: number,
 }
 
@@ -12,5 +12,6 @@ export interface IPet {
     name: string,
     stats: IStats,
     clothes: string[],
-    isSleeping: boolean
+    isSleeping: boolean,
+    mood: string
 }

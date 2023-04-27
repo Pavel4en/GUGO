@@ -1,5 +1,9 @@
 import React, {useState} from "react";
 import styled, {createGlobalStyle} from 'styled-components';
+import {useAuthStatus} from "./hooks";
+import {redirect, useNavigate} from "react-router";
+import {authAPI} from "./authAPI";
+import {Navigate} from "react-router-dom";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -74,10 +78,15 @@ const Button = styled.button`
     transform: translateX(-3px);
 `
 
-const RegPage: React.FC = () => {
+const RegistrationApp: React.FC = () => {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+
+    const authStatus = useAuthStatus();
+    const navigate = useNavigate();
+
     const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        event.preventDefault();
         const input = event.target.value;
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input)) {
             event.target.setCustomValidity('Введите действительный адрес электронной почты');
@@ -86,6 +95,7 @@ const RegPage: React.FC = () => {
         }
     };
     const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        event.preventDefault();
         const input = event.target.value;
         if (!/^(?=.*[0-9])(?=.*[a-zA-Z])[a-zA-Z0-9]+$/.test(input)) {
             event.target.setCustomValidity('Пароль должен состоять только из латинских букв и цифр');
@@ -96,6 +106,7 @@ const RegPage: React.FC = () => {
     };
 
     const handleConfirmPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        event.preventDefault();
         const input = event.target.value;
         if (input !== password) {
             event.target.setCustomValidity('Пароли не совпадают');
@@ -108,23 +119,33 @@ const RegPage: React.FC = () => {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
-        // TODO
-
         if (password === confirmPassword) {
-            console.log('Passwords match');
-        } else {
-            console.log('Passwords do not match');
+            const target = event.target as typeof event.target & {
+                email: { value: string },
+                password: { value: string }
+            }
+
+            const data = {
+                username: target.email.value,
+                password: target.password.value,
+                petname: 'KROT'
+            }
+
+            authAPI.sendRegister(data)
+                .then(() => navigate("/login"));
         }
     };
 
     return (
         <>
+            {authStatus.value ? <Navigate to={"/"}/> : null}
             <GlobalStyle/>
             <Container>
                 <Title>Registration</Title>
                 <Form onSubmit={handleSubmit}>
-                    <Input type="email" placeholder="Email" required onChange={handleEmailChange}/>
-                    <Input type="password" placeholder="Password" required onChange={handlePasswordChange}/>
+                    <Input type="email" placeholder="Email" name='email' required onChange={handleEmailChange}/>
+                    <Input type="password" placeholder="Password" name="password" required
+                           onChange={handlePasswordChange}/>
                     <Input type="password" placeholder="Repeat Password" required
                            onChange={handleConfirmPasswordChange}/>
                     <ButtonContainer>
@@ -136,4 +157,4 @@ const RegPage: React.FC = () => {
     );
 };
 
-export default RegPage;
+export default RegistrationApp;

@@ -313,7 +313,7 @@ const StyledTableCell = styled.td`
 
 const TaskList = () => {
     const dispatcher = useDispatch();
-    const taskList = useSelector(selectTasks);
+    const taskList: ITask[] = useSelector(selectTasks);
 
     useEffect(
         () => updateTasks(dispatcher),
@@ -442,6 +442,7 @@ const TaskListEntry = ({_id, description, name, coins, difficulty}: ITask) => {
         event.preventDefault();
 
         dispatcher(todoCompleted(_id));
+        dispatcher(todoDeleted(_id));
 
         const data = {
             _id: _id

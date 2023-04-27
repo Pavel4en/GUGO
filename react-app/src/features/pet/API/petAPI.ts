@@ -1,12 +1,11 @@
-import {IPet} from "../interfaces";
-
 import {sendPostOnURL} from "../../../utils/webUtils";
+import {IAPIPet} from "./interfacesAPI";
 
 const petAPI_URL = 'http://localhost:5000/todoapi'
 
 export const petAPI = {
-    getPet: () => {
-        return sendPostOnURL<IPet>(petAPI_URL + '/get_pet_data')
+    getPet: (): Promise<IAPIPet> => {
+        return sendPostOnURL<IAPIPet>(petAPI_URL + '/get_pet_data')
     },
     sendFeedPet: (foodID: string) => {
         return sendPostOnURL(
