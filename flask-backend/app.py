@@ -85,7 +85,7 @@ def auth_checker() -> dict | Player:
 #   "description": "",
 #   "status": "ok"
 # }
-@app.route("/todoapi/createplayer", methods=['POST'])
+@app.route("/todoapi/create_player", methods=['POST'])
 @exc_handler
 def create_player():
     # Получаем словарь из json строки из запроса
@@ -115,7 +115,7 @@ def create_player():
 #   "description": "",
 #   "status": "ok"
 # }
-@app.route("/todoapi/getplayer", methods=['POST'])
+@app.route("/todoapi/get_player", methods=['POST'])
 @exc_handler
 def get_player_data():
     login_player = auth_checker()
@@ -152,7 +152,7 @@ def get_player_data():
 #   "description": "",
 #   "status": "ok"
 # }
-@app.route("/todoapi/getpet", methods=['POST'])
+@app.route("/todoapi/get_pet", methods=['POST'])
 @exc_handler
 def get_pet_data():
     login_player = auth_checker()
@@ -192,7 +192,7 @@ def get_pet_data():
 #     "status": "ok",
 #     "desc": ""
 # }
-@app.route("/todoapi/getallgamefood", methods=['POST'])
+@app.route("/todoapi/get_all_game_food", methods=['POST'])
 @exc_handler
 def get_all_game_food():
     login_player = auth_checker()
@@ -225,7 +225,7 @@ def get_all_game_food():
 #     "status": "ok",
 #     "desc": ""
 # }
-@app.route("/todoapi/getallgameitems", methods=['POST'])
+@app.route("/todoapi/get_all_game_items", methods=['POST'])
 @exc_handler
 def get_all_game_items():
     login_player = auth_checker()
@@ -249,7 +249,7 @@ def get_all_game_items():
 #     "status": "ok"
 #     "desc": ""
 # }
-@app.route("/todoapi/sendfoodeaten", methods=['POST'])
+@app.route("/todoapi/eat_food", methods=['POST'])
 @exc_handler
 def feed_pet():
     login_player = auth_checker()
@@ -283,7 +283,7 @@ def feed_pet():
 #     "status": "ok"
 #     "desc": ""
 # }
-@app.route("/todoapi/buyitem", methods=['POST'])
+@app.route("/todoapi/buy_item", methods=['POST'])
 @exc_handler
 def buy_item():
     login_player = auth_checker()
@@ -318,7 +318,7 @@ def buy_item():
 #     "status": "ok"
 #     "desc": ""
 # }
-@app.route("/todoapi/sendclothesputon", methods=['POST'])
+@app.route("/todoapi/clothes_put_on", methods=['POST'])
 @exc_handler
 def wear_item():
     login_player = auth_checker()
@@ -352,7 +352,7 @@ def wear_item():
 #     "status": "ok",
 #     "desc": ""
 # }
-@app.route("/todoapi/sendclothesremoved", methods=['POST'])
+@app.route("/todoapi/clothes_remove", methods=['POST'])
 @exc_handler
 def take_off_item():
     login_player = auth_checker()
@@ -385,7 +385,7 @@ def take_off_item():
 #     "status": "ok",
 #     "desc": ""
 # }
-@app.route("/todoapi/givegem", methods=['POST'])
+@app.route("/todoapi/give_gem", methods=['POST'])
 @exc_handler
 def give_gems():
     login_player = auth_checker()
@@ -402,7 +402,7 @@ def give_gems():
     return AppResponse("ok", "", {}).to_dict()
 
 
-@app.route("/todoapi/sendsleeptoggled", methods=['POST'])
+@app.route("/todoapi/toggle_sleep", methods=['POST'])
 @exc_handler
 def toggle_sleep():
     login_player = auth_checker()
@@ -429,7 +429,7 @@ def index():
 #
 # OUTPUT:
 # Статусный код
-@app.route('/todoapi/addtask', methods=['POST'])
+@app.route('/todoapi/add_task', methods=['POST'])
 def add_task():
     login_player = auth_checker()
     if type(login_player) is dict:
@@ -458,7 +458,7 @@ def add_task():
 #
 # OUTPUT:
 # Статусный код
-@app.route('/todoapi/edittask', methods=['POST'])
+@app.route('/todoapi/edit_task', methods=['POST'])
 def edit_task():
     login_player = auth_checker()
     if type(login_player) is dict:
@@ -486,7 +486,7 @@ def edit_task():
 #
 # OUTPUT:
 # Статусный код
-@app.route('/todoapi/deletetask', methods=['POST'])
+@app.route('/todoapi/delete_task', methods=['POST'])
 def delete_task():
     login_player = auth_checker()
     if type(login_player) is dict:
@@ -510,7 +510,7 @@ def delete_task():
 #
 # OUTPUT:
 # Статусный код
-@app.route('/todoapi/completetask', methods=['POST'])
+@app.route('/todoapi/complete_task', methods=['POST'])
 def complete_task():
     login_player = auth_checker()
     if type(login_player) is dict:
@@ -523,6 +523,9 @@ def complete_task():
     # Получаем задачу по ее id
     # TODO: fix error
     task = tasks.find_one({'_id': ObjectId(task_id)})
+    # Проверяем на существование конкретного таска
+    if task is None:
+        return AppResponse("fail", "Task with that id does not exist", {}).to_dict()
     # Обновляем статус задачи
     tasks.update_one({'_id': ObjectId(task_id)}, {'$set': {'complete': True}})
     # Перемещаем задачу в коллекцию выполненных задач
@@ -548,7 +551,7 @@ def complete_task():
 #         "name": "Купить хлеб в другом городе"
 #     }
 # ]
-@app.route('/todoapi/completedtasks', methods=['POST'])
+@app.route('/todoapi/completed_tasks', methods=['POST'])
 def get_complete_tasks():
     login_player = auth_checker()
     if type(login_player) is dict:
@@ -585,7 +588,7 @@ def get_complete_tasks():
 #         "name": "проехать на машине 1000 км"
 #     },
 # ]
-@app.route('/todoapi/incompletedtasks', methods=['POST'])
+@app.route('/todoapi/incompleted_tasks', methods=['POST'])
 def get_incomplete_tasks():
     login_player = auth_checker()
     if type(login_player) is dict:
