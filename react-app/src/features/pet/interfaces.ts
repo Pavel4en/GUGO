@@ -1,4 +1,6 @@
 // Interfaces
+import {IAPIAnswer} from "../../utils/webInterfaces";
+
 export interface IStats {
     satiety: number,
     sleep: number,
@@ -11,10 +13,4 @@ export interface IPet {
     stats: IStats,
     clothes: string[],
     isSleeping: boolean
-}
-
-// Redux interfaces
-export interface IPetSetup {
-    type: "pet/petSetup",
-    payload: IPet
 }

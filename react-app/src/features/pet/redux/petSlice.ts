@@ -1,7 +1,7 @@
 import {createSlice} from "@reduxjs/toolkit"
 import {
     IPet
-} from "./interfaces"
+} from "../interfaces"
 
 
 const initialState: IPet = {
@@ -38,7 +38,7 @@ export const petSlice = createSlice({
         petPutOnCloth(state, action: {payload: {clothID: string}, type: string}) {
             state.clothes.push(action.payload.clothID);
         },
-        petTakeOffCloth(state, action: {payload: {clothID: string}, type: string}) {
+        petRemovedCloth(state, action: {payload: {clothID: string}, type: string}) {
             const index = state.clothes.indexOf(action.payload.clothID);
 
             if (index === -1)
@@ -46,7 +46,7 @@ export const petSlice = createSlice({
 
             state.clothes.splice(index);
         },
-        petToggleSleep(state) {
+        petToggledSleep(state) {
             state.isSleeping = !state.isSleeping;
         }
     }
@@ -59,8 +59,8 @@ export const {
     petAddedHappiness,
     petAddedSleep,
     petPutOnCloth,
-    petTakeOffCloth,
-    petToggleSleep
+    petRemovedCloth,
+    petToggledSleep
 } = petSlice.actions;
 
 export const selectName = (state: any) => {

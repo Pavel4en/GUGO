@@ -161,6 +161,9 @@ flask-backend/cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
+# VSCode
+.vscode
+
 # dependencies
 react-app/node_modules
 react-app/.pnp
@@ -173,7 +176,7 @@ react-app/coverage
 react-app/build
 
 # misc
-react-app/.DS_Store
+.DS_Store
 react-app/.env.local
 react-app/.env.development.local
 react-app/.env.test.local

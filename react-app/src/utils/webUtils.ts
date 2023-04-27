@@ -8,9 +8,9 @@ export const getJSONFromURL = async <TResponse, >(url: string, config: RequestIn
     }
 }
 
-export const sendDataOnURL = async <TResponse, >(
+export const sendPostOnURL = async <TResponse, >(
     url: string,
-    data: any,
+    data: any = {},
     config: RequestInit = {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
