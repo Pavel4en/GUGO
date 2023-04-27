@@ -36,13 +36,13 @@ export const todoSlice = createSlice({
             todo.name = action.payload.name;
             todo.description = action.payload.description;
         },
-        todoToggled(state, action) {
+        todoCompleted(state, action) {
             const todo = state.entities.find(todo => todo._id === action.payload._id)
 
             if (todo === undefined)
                 throw Error("TODO doesn't exist");
 
-            todo.completed = !action.payload.completed;
+            todo.completed = true;
         },
         todoLoaded(state) {
             return {
@@ -66,7 +66,7 @@ export const {
     todoEdited,
     todoLoaded,
     todoLoading,
-    todoToggled
+    todoCompleted
 } = todoSlice.actions;
 
 export const selectTasks = (state: any) => {

@@ -19,11 +19,13 @@ import {
     todoEdited,
     todoLoaded,
     todoLoading,
-    todoToggled,
+    todoCompleted,
     selectTasks
 } from "./redux/todoSlice";
 
 import {todoAPI} from "./todoAPI";
+import {petAPI} from "../pet/API/petAPI";
+import {Link} from "react-router-dom";
 
 
 const Global = createGlobalStyle`
@@ -60,23 +62,23 @@ const AppWrapper = styled.div`
 
 const Title = styled.h1`
   text-align: center;
-  text-align: center;
   font-size: 5rem;
   padding-bottom: 4rem;
 `
 
 const updateTasks = (dispatcher: Dispatch<IUpdateTasks>) => {
-    todoAPI.getIncompletedTasks().then((newTasks: ITask[]) => dispatcher(todoUpdated(newTasks)))
+    todoAPI.getIncompletedTasks()
+        .then((newTasks: ITask[]) => dispatcher(todoUpdated(newTasks)))
 }
 
 const Header = styled.header`
-position: sticky;  
-top: 0;
-background-color: #232946;
+  position: sticky;
+  top: 0;
+  background-color: #232946;
 `
 
 const SwitchToPet = styled(StyledButton)`
-  margin: 4rem 85%;
+  margin: 4rem;
   color: #1D9AF2;
   background-color: #292D3E;
   border: 1px solid #1D9AF2;
@@ -86,59 +88,60 @@ const SwitchToPet = styled(StyledButton)`
   height: 5rem;
   text-align: center;
   justify-content: center;
-  justify-item: center;
-  transition: 0.4s;
   font-size: 1.5rem;
   box-shadow: 0 0 4px #999;
   outline: none;
   background-position: center;
   transition: background 0.8s;
 
-  &:hover{
-  background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%)
-   center/15000%;
-  color: white;
+  &:hover {
+    background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%)
+      center/15000%;
+    color: white;
+  }
 
-  &:active{
-  background-color: #292d3e;
-  background-size: 100%;
-  transition: background 0s;
+  &:active {
+    background-color: #292d3e;
+    background-size: 100%;
+    transition: background 0s;
 
-  box-shadow: 0 3px 0 #00823f;
-  top: 3px;
+    box-shadow: 0 3px 0 #00823f;
+    top: 3px;
+  }
 `
 
 const TodoApp = () => {
     return (
         <>
             <Global/>
-            <SwitchToPet>Pet</SwitchToPet>
+            <Link to={"/pet"}>
+                <SwitchToPet>Pet</SwitchToPet>
+            </Link>
             <AppWrapper>
-              <Title>Task To Gem</Title>
-                  <Header>    
-                      <TaskManageBar/>
-                      <StyledTaskListHeader>
-                          <TableCell>Name</TableCell>
-                          <TableCell>Description</TableCell>
-                          <TableCell>Difficulty</TableCell>
-                          <TableCell>Gems</TableCell>
-                          <TableCell/>
-                      </StyledTaskListHeader> 
-                  </Header>
-                  <TaskList/>
+                <Title>Task To Gem</Title>
+                <Header>
+                    <TaskManageBar/>
+                    <StyledTaskListHeader>
+                        <TableCell>Name</TableCell>
+                        <TableCell>Description</TableCell>
+                        <TableCell>Difficulty</TableCell>
+                        <TableCell>Gems</TableCell>
+                        <TableCell/>
+                    </StyledTaskListHeader>
+                </Header>
+                <TaskList/>
             </AppWrapper>
         </>
     );
 }
 
 const StyledTaskManageBar = styled.div`
-  // display: flex;
   padding: 5rem;
   width: 100%;
   margin-bottom: 1rem;
   margin-left: -5rem;
 
-  padding-top:0;
+  padding-top: 0;
 `
 
 const TaskManageBar = () => {
@@ -185,7 +188,6 @@ const StyledTaskAddFormSubmit = styled(StyledButton)`
   transition: 0.4s;
   display: inline-block;
   position: relative;
-  cursor: pointer;
 
   &:active {
     top: 3px;
@@ -195,21 +197,7 @@ const StyledTaskAddFormSubmit = styled(StyledButton)`
 const TaskAddForm = () => {
     const dispatcher = useDispatch();
 
-    const addTask = (name: string, description: string) => {
-        dispatcher(todoAdded({
-            name: name,
-            description: description,
-            difficulty: 0,
-            _id: '',
-            coins: 0,
-            completed: false
-        }));
-
-        todoAPI.addTask({name: name, description: description})
-            .then(() => updateTasks(dispatcher));
-    }
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleAdd = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
 
         const target = event.target as typeof event.target & {
@@ -217,17 +205,24 @@ const TaskAddForm = () => {
             taskDescription: { value: string }
         };
 
-        addTask(
-            target.taskName.value,
-            target.taskDescription.value
-        )
+        dispatcher(todoAdded({
+            name: target.taskName.value,
+            description: target.taskDescription.value,
+            difficulty: 0,
+            _id: '',
+            coins: 0,
+            completed: false
+        }));
+
+        todoAPI.sendAddTask({name: target.taskName.value, description: target.taskDescription.value})
+            .then(() => updateTasks(dispatcher));
     }
 
     return (
-        <StyledTaskAddForm onSubmit={handleSubmit}>
+        <StyledTaskAddForm onSubmit={handleAdd}>
             <StyledTaskAddFormName name='taskName' placeholder='Task Name'/>
             <StyledTaskAddFormDescription name='taskDescription' placeholder='Task Description'/>
-            <StyledTaskAddFormSubmit> Add </StyledTaskAddFormSubmit>
+            <StyledTaskAddFormSubmit>Add</StyledTaskAddFormSubmit>
         </StyledTaskAddForm>
     );
 }
@@ -240,11 +235,11 @@ const StyledTaskSearchForm = styled.form`
 
 const StyledTaskSearchFromInput = styled(StyledInput)`
   flex: 1;
-//   padding: 10px;
+  //   padding: 10px;
   background-color: #fffffe;
   color: #151515;
   border: none;
-//   border-radius: 5px 0 0 5px;
+  //   border-radius: 5px 0 0 5px;
   font-size: 1.25rem;
   transition: 0.4s;
 `
@@ -279,11 +274,11 @@ const TaskSearchForm = () => {
 }
 
 const StyledTaskTable = styled.table`
-border-collapse: collapse;
-overflow: hidden;
-width: 100%;
-table-layout: fixed;
-// border: 1px solid white;
+  border-collapse: collapse;
+  overflow: hidden;
+  width: 100%;
+  table-layout: fixed;
+  // border: 1px solid white;
 `
 
 const StyledTaskTableRow = styled.tr`
@@ -292,21 +287,14 @@ const StyledTaskTableRow = styled.tr`
 `
 
 const StyledTaskListHeader = styled.div`
-background-color: #eebbc3;
-padding: 10px;
-display: flex;
-font-size: 18px;
-font-weight: bold;
-color: #232946;
-border-radius: 5px;
-position: sticky;  
-top: 0;
-`
-
-const StyledTableHeaderRow = styled.tr`
   background-color: #eebbc3;
-  display: table-row;
-  position: sticky;  
+  padding: 10px;
+  display: flex;
+  font-size: 18px;
+  font-weight: bold;
+  color: #232946;
+  border-radius: 5px;
+  position: sticky;
   top: 0;
 `
 
@@ -323,22 +311,14 @@ const StyledTableCell = styled.td`
   font-size: 1rem;
 `
 
-const StyledTableHeaderCell = styled.th`
-  padding: 10px;
-  text-align: center;
-  color: #232946;
-  font-size: 18px;
-  font-weight: bold;
-  border: none;
-  white-space: nowrap;
-  min-width: 0;
-`
-
 const TaskList = () => {
     const dispatcher = useDispatch();
     const taskList = useSelector(selectTasks);
 
-    useEffect(() => updateTasks(dispatcher), [dispatcher]);
+    useEffect(
+        () => updateTasks(dispatcher),
+        [dispatcher]
+    );
 
     const taskComponentList = taskList.map(
         (task: ITask) => <TaskListEntry {...task} />
@@ -362,18 +342,15 @@ const StyledContent = styled(Fragment)`
   flex: 1;
 `
 
-const StyledEdit = styled(StyledButton)`
-  padding: 15px;
+const StyledEditButton = styled(StyledButton)`
   background-color: #eebbc3;
   color: #232946;
   border: none;
-  border-radius: 5px;
   background-image: url(${editImage});
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
   display: flex;
-
   border-radius: 4px;
   padding: 0 15px;
   cursor: pointer;
@@ -387,18 +364,15 @@ const StyledEdit = styled(StyledButton)`
   }
 `
 
-const StyledDelete = styled(StyledButton)`
-  padding: 15px;
+const StyledDeleteButton = styled(StyledButton)`
   background-color: #eebbc3;
   color: #232946;
   border: none;
-  border-radius: 5px;
   background-image: url(${deleteImage});
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
   display: flex;
-
   border-radius: 4px;
   padding: 0 15px;
   cursor: pointer;
@@ -426,19 +400,15 @@ const StyledSpan = styled(({contentEditable, value = ''}:
 })`
 `
 
-const StyledDone = styled(StyledButton)`
-  padding: 15px;
+const StyledCompleteButton = styled(StyledButton)`
   background-color: #eebbc3;
   color: #232946;
   border: none;
-  border-radius: 5px;
   background-image: url(${doneImage});
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
   display: flex;
-
-
   border-radius: 4px;
   padding: 0 15px;
   cursor: pointer;
@@ -456,21 +426,29 @@ const TaskListEntry = ({_id, description, name, coins, difficulty}: ITask) => {
     const dispatcher = useDispatch();
 
     const handleDelete = async (event: React.FormEvent<HTMLButtonElement>) => {
-        const sendDeleteTask = () => {
-            const requestOption = {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    _id: _id
-                })
-            }
-            return fetch('http://localhost:5000/delete_task', requestOption)
-        }
         event.preventDefault();
 
         dispatcher(todoDeleted(_id));
 
-        sendDeleteTask().then(() => updateTasks(dispatcher))
+        const data = {
+            _id: _id
+        }
+
+        todoAPI.sendDeleteTask(data)
+            .then(() => updateTasks(dispatcher))
+    }
+
+    const handleComplete = async (event: React.FormEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+
+        dispatcher(todoCompleted(_id));
+
+        const data = {
+            _id: _id
+        }
+
+        todoAPI.sendCompleteTask(data)
+            .then(() => updateTasks(dispatcher));
     }
 
     return (
@@ -483,16 +461,14 @@ const TaskListEntry = ({_id, description, name, coins, difficulty}: ITask) => {
                     <StyledTableCell><StyledSpan contentEditable={false} value={String(coins)}/></StyledTableCell>
                 </StyledContent>
                 <StyledAction>
-                    <StyledTableCell><StyledEdit> </StyledEdit></StyledTableCell>
-                    <StyledTableCell><StyledDelete onClick={handleDelete}> </StyledDelete></StyledTableCell>
-                    <StyledTableCell><StyledDone> </StyledDone></StyledTableCell>
+                    <StyledTableCell><StyledEditButton/></StyledTableCell>
+                    <StyledTableCell><StyledDeleteButton onClick={handleDelete}/></StyledTableCell>
+                    <StyledTableCell><StyledCompleteButton onClick={handleComplete}/></StyledTableCell>
                 </StyledAction>
             </StyledTaskListElement>
         </StyledTaskTableRow>
     );
 }
-
-
 
 
 export default TodoApp;

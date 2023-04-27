@@ -1,6 +1,6 @@
 import React, {ButtonHTMLAttributes, Fragment, useEffect, useState} from 'react';
 import styled, {createGlobalStyle, keyframes} from 'styled-components';
-import { Keyframes } from 'styled-components';
+import {Keyframes} from 'styled-components';
 
 import petHappy from './images/pet-pet/m-happy.png'
 import petClassic from './images/pet-pet/m-classic.png'
@@ -35,7 +35,7 @@ import {
 } from "./redux/petSlice";
 
 import {useDispatch} from "react-redux";
-import { emitWarning } from 'process';
+import {Link} from "react-router-dom";
 
 
 const Global = createGlobalStyle`
@@ -51,7 +51,6 @@ const Global = createGlobalStyle`
 `
 
 const StyledButton = styled.button`
-  border: none;
   margin-top: 4rem;
   width: 5.3rem;
   height: 5.3rem;
@@ -59,8 +58,6 @@ const StyledButton = styled.button`
   margin-right: 5rem;
   background-repeat: no-repeat;
   background-position: center;
-
-
   color: #1D9AF2;
   background-color: #eebbc3;
   border: 2px solid #eebbc3;
@@ -70,8 +67,8 @@ const StyledButton = styled.button`
   transition: all 0.2s ease-in-out;
 
   &:hover {
-  box-shadow: 2px 2px #eebbc3, 3px 3px #eebbc3, 4px 4px #eebbc3;
-  transform: translateX(-3px);
+    box-shadow: 2px 2px #eebbc3, 3px 3px #eebbc3, 4px 4px #eebbc3;
+    transform: translateX(-3px);
   }
 `
 
@@ -93,10 +90,8 @@ const updatePet = () => {
     // petAPI.getPet().then((newPet: IPet) => dispatcher(petSetup(newPet)));
 }
 
-const SwithToTodo = styled.button`
-
+const SwitchToTODO = styled.button`
   margin: 4rem;
-
   color: #1D9AF2;
   background-color: #292D3E;
   border: 1px solid #1D9AF2;
@@ -106,33 +101,35 @@ const SwithToTodo = styled.button`
   height: 5rem;
   text-align: center;
   justify-content: center;
-  justify-item: center;
-  transition: 0.4s;
   font-size: 1.5rem;
   box-shadow: 0 0 4px #999;
   outline: none;
   background-position: center;
   transition: background 0.8s;
 
-  &:hover{
-  background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%)
-   center/15000%;
-  color: white;
+  &:hover {
+    background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%)
+      center/15000%;
+    color: white;
+  }
 
-  &:active{
-  background-color: #292d3e;
-  background-size: 100%;
-  transition: background 0s;
+  &:active {
+    background-color: #292d3e;
+    background-size: 100%;
+    transition: background 0s;
 
-  box-shadow: 0 3px 0 #00823f;
-  top: 3px;
+    box-shadow: 0 3px 0 #00823f;
+    top: 3px;
+  }
 `
 
 const PetApp = () => {
     return (
         <>
             <Global/>
-                <SwithToTodo>ToDo</SwithToTodo>
+            <Link to={"/todo"}>
+                <SwitchToTODO>TODO</SwitchToTODO>
+            </Link>
             <AppWrapper>
                 <PetNameStyle>Мой Мышь</PetNameStyle>
                 <Visual>
@@ -150,10 +147,13 @@ const PetApp = () => {
     );
 }
 
-const leFadeIn = keyframes` {
-  from { opacity: 0 }
-  to { opacity: 1 }
-}
+const leFadeIn = keyframes`
+  from {
+    opacity: 0
+  }
+  to {
+    opacity: 1
+  }
 `
 
 const PetNameStyle = styled.div`
@@ -191,8 +191,8 @@ const StyledComputerButton = styled(StyledButton)`
 
 const StyledEatButton = styled(StyledButton)`
   background-image: url(${eat});
-  
-  
+
+
 `
 
 const LampButton = () => {
@@ -247,7 +247,8 @@ const StyledStatsListItem = styled(StatsListItem)`
   border-radius: 35px;
   justify-content: center;
   background-color: #eebbc3;
-  width: 14rem;  height: 50%;
+  width: 14rem;
+  height: 50%;
   font-size: 1.2rem;
   text-align: left;
   position: relative;
@@ -256,44 +257,44 @@ const StyledStatsListItem = styled(StatsListItem)`
 `
 
 const StatsList = () => {
-  const [food, setFood] = useState(100);
-  const [coffee, setCoffee] = useState(100);
-  const [positive, setPositive] = useState(100);
-  const [pet_mood, setMood] = useState("happy");
+    const [food, setFood] = useState(100);
+    const [coffee, setCoffee] = useState(100);
+    const [positive, setPositive] = useState(100);
+    const [pet_mood, setMood] = useState("happy");
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFood((prevFood) => Math.max(0, prevFood - 10));
-      setCoffee((prevCoffee) => Math.max(0, prevCoffee - 7));
-      setPositive((prevPositive) => Math.max(0, prevPositive - 5));
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setFood((prevFood) => Math.max(0, prevFood - 10));
+            setCoffee((prevCoffee) => Math.max(0, prevCoffee - 7));
+            setPositive((prevPositive) => Math.max(0, prevPositive - 5));
+        }, 5000);
+        return () => clearInterval(interval);
+    }, []);
 
-  useEffect(() => {
-    updateMood();
-  }, [food, coffee, positive]);
+    useEffect(() => {
+        updateMood();
+    }, [food, coffee, positive]);
 
-  function updateMood() {
-    if (food < 50) {
-      setMood("petSad");
-    } else if (coffee > 80) {
-      setMood("petSleepy");
-    } else if (positive > 70) {
-      setMood("petHappy");
-    } else {
-      setMood("normal");
+    function updateMood() {
+        if (food < 50) {
+            setMood("petSad");
+        } else if (coffee > 80) {
+            setMood("petSleepy");
+        } else if (positive > 70) {
+            setMood("petHappy");
+        } else {
+            setMood("normal");
+        }
     }
-  }
 
-  return (
-    <StyledStatsList>
-      <StyledStatsListItem label={`Еда: ${food}%`} />
-      <StyledStatsListItem label={`Кофеин: ${coffee}%`} />
-      <StyledStatsListItem label={`Позитивчик: ${positive}%`} />
-      <StyledStatsListItem label={`Настроение: ${pet_mood}`} />
-    </StyledStatsList>
-  );
+    return (
+        <StyledStatsList>
+            <StyledStatsListItem label={`Еда: ${food}%`}/>
+            <StyledStatsListItem label={`Кофеин: ${coffee}%`}/>
+            <StyledStatsListItem label={`Позитивчик: ${positive}%`}/>
+            <StyledStatsListItem label={`Настроение: ${pet_mood}`}/>
+        </StyledStatsList>
+    );
 };
 
 const StyledPetNest = styled.div`

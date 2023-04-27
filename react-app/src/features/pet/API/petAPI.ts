@@ -2,7 +2,7 @@ import {IPet} from "../interfaces";
 
 import {sendPostOnURL} from "../../../utils/webUtils";
 
-const petAPI_URL = 'http://localhost:5000/gameapi'
+const petAPI_URL = 'http://localhost:5000/todoapi'
 
 export const petAPI = {
     getPet: () => {
