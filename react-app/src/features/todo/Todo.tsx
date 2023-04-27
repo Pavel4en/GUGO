@@ -57,7 +57,7 @@ const StyledButton = styled.button`
 const AppWrapper = styled.div`
   max-width: 800px;
   margin: 0 auto;
-  padding: 40px;
+  // padding: 40px;
 `
 
 const Title = styled.h1`
@@ -78,35 +78,38 @@ const Header = styled.header`
 `
 
 const SwitchToPet = styled(StyledButton)`
-  margin: 4rem;
-  color: #1D9AF2;
-  background-color: #292D3E;
-  border: 1px solid #1D9AF2;
-  border-radius: 0.5rem;
-  padding: 24px 88px;
-  cursor: pointer;
-  height: 5rem;
-  text-align: center;
-  justify-content: center;
-  font-size: 1.5rem;
-  box-shadow: 0 0 4px #999;
-  outline: none;
-  background-position: center;
-  transition: background 0.8s;
+margin-right: 4rem;
+margin-left: 4rem;
+margin-top: 4rem;
 
-  &:hover {
-    background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%)
-      center/15000%;
-    color: white;
+color: #1D9AF2;
+background-color: #292D3E;
+border: 1px solid #1D9AF2;
+border-radius: 0.5rem;
+padding: 24px 88px;
+cursor: pointer;
+height: 5rem;
+text-align: center;
+justify-content: center;
+font-size: 1.5rem;
+box-shadow: 0 0 4px #eebbc3;
+outline: none;
+background-position: center;
+transition: background 0.8s;
+
+&:hover{
+background: #47a7f5 radial-gradient(circle, transparent 1%, #eebbc3 1%)
+ center/15000%;
+color: white;
   }
 
-  &:active {
-    background-color: #292d3e;
-    background-size: 100%;
-    transition: background 0s;
+&:active{
+background-color: #292d3e;
+background-size: 100%;
+transition: background 0s;
 
-    box-shadow: 0 3px 0 #00823f;
-    top: 3px;
+box-shadow: 0 3px 0 #00823f;
+top: 3px;
   }
 `
 
@@ -235,11 +238,9 @@ const StyledTaskSearchForm = styled.form`
 
 const StyledTaskSearchFromInput = styled(StyledInput)`
   flex: 1;
-  //   padding: 10px;
   background-color: #fffffe;
   color: #151515;
   border: none;
-  //   border-radius: 5px 0 0 5px;
   font-size: 1.25rem;
   transition: 0.4s;
 `
@@ -278,7 +279,6 @@ const StyledTaskTable = styled.table`
   overflow: hidden;
   width: 100%;
   table-layout: fixed;
-  // border: 1px solid white;
 `
 
 const StyledTaskTableRow = styled.tr`
