@@ -3,6 +3,7 @@ import styled, {createGlobalStyle} from 'styled-components';
 
 import deleteImage from "./images/delete.png"
 import editImage from "./images/edit.png"
+import doneImage from "./images/done.png"
 
 import {useDispatch, useSelector} from "react-redux";
 import {Dispatch} from "@reduxjs/toolkit";
@@ -30,6 +31,7 @@ const Global = createGlobalStyle`
     background-color: #232946;
     color: #fffffe;
     font-family: Arial, sans-serif;
+    transition: 0.4s;
   }
 `
 
@@ -73,23 +75,57 @@ top: 0;
 background-color: #232946;
 `
 
+const SwitchToPet = styled(StyledButton)`
+  margin: 4rem 85%;
+  color: #1D9AF2;
+  background-color: #292D3E;
+  border: 1px solid #1D9AF2;
+  border-radius: 0.5rem;
+  padding: 24px 88px;
+  cursor: pointer;
+  height: 5rem;
+  text-align: center;
+  justify-content: center;
+  justify-item: center;
+  transition: 0.4s;
+  font-size: 1.5rem;
+  box-shadow: 0 0 4px #999;
+  outline: none;
+  background-position: center;
+  transition: background 0.8s;
+
+  &:hover{
+  background: #47a7f5 radial-gradient(circle, transparent 1%, #47a7f5 1%)
+   center/15000%;
+  color: white;
+
+  &:active{
+  background-color: #292d3e;
+  background-size: 100%;
+  transition: background 0s;
+
+  box-shadow: 0 3px 0 #00823f;
+  top: 3px;
+`
+
 const TodoApp = () => {
     return (
         <>
             <Global/>
+            <SwitchToPet>Pet</SwitchToPet>
             <AppWrapper>
-                <Title>GUGO TTG</Title>
-                    <Header>    
-                        <TaskManageBar/>
-                        <StyledTaskListHeader>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Description</TableCell>
-                            <TableCell>Difficulty</TableCell>
-                            <TableCell>Gems</TableCell>
-                            <TableCell/>
-                        </StyledTaskListHeader> 
-                    </Header>
-                    <TaskList/>
+              <Title>Task To Gem</Title>
+                  <Header>    
+                      <TaskManageBar/>
+                      <StyledTaskListHeader>
+                          <TableCell>Name</TableCell>
+                          <TableCell>Description</TableCell>
+                          <TableCell>Difficulty</TableCell>
+                          <TableCell>Gems</TableCell>
+                          <TableCell/>
+                      </StyledTaskListHeader> 
+                  </Header>
+                  <TaskList/>
             </AppWrapper>
         </>
     );
@@ -147,6 +183,13 @@ const StyledTaskAddFormSubmit = styled(StyledButton)`
   -webkit-text-fill-color: transparent;
   cursor: pointer;
   transition: 0.4s;
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+
+  &:active {
+    top: 3px;
+  }
 `
 
 const TaskAddForm = () => {
@@ -182,8 +225,8 @@ const TaskAddForm = () => {
 
     return (
         <StyledTaskAddForm onSubmit={handleSubmit}>
-            <StyledTaskAddFormName name='taskName' placeholder='Введите название задачи'/>
-            <StyledTaskAddFormDescription name='taskDescription' placeholder='Введите описание задачи'/>
+            <StyledTaskAddFormName name='taskName' placeholder='Task Name'/>
+            <StyledTaskAddFormDescription name='taskDescription' placeholder='Task Description'/>
             <StyledTaskAddFormSubmit> Add </StyledTaskAddFormSubmit>
         </StyledTaskAddForm>
     );
@@ -215,6 +258,14 @@ const StyledTaskSearchFormSubmit = styled(StyledButton)`
   border-radius: 0 5px 5px 0;
   transition: 0.4s;
   font-size: 1.25rem;
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+
+  &:active {
+    box-shadow: 0 3px 0 #1D9AF2;
+    top: 3px;
+  }
 
 `
 
@@ -317,12 +368,23 @@ const StyledEdit = styled(StyledButton)`
   color: #232946;
   border: none;
   border-radius: 5px;
-  margin-right: 10px;
   background-image: url(${editImage});
   background-repeat: no-repeat;
   background-position: center;
   background-size: 24px 24px;
   display: flex;
+
+  border-radius: 4px;
+  padding: 0 15px;
+  cursor: pointer;
+  height: 32px;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    box-shadow: 1px 1px #53a7ea, 2px 2px #53a7ea, 3px 3px #53a7ea;
+    transform: translateX(-3px);
+  }
 `
 
 const StyledDelete = styled(StyledButton)`
@@ -337,6 +399,18 @@ const StyledDelete = styled(StyledButton)`
   background-size: 24px 24px;
   display: flex;
 
+  border-radius: 4px;
+  padding: 0 15px;
+  cursor: pointer;
+  height: 32px;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    box-shadow: 1px 1px #53a7ea, 2px 2px #53a7ea, 3px 3px #53a7ea;
+    transform: translateX(-3px);
+  }
+
 `
 
 const StyledAction = styled.div`
@@ -350,6 +424,32 @@ const StyledSpan = styled(({contentEditable, value = ''}:
                                }) => {
     return <span className="input" role="textbox" contentEditable={contentEditable}>{value}</span>;
 })`
+`
+
+const StyledDone = styled(StyledButton)`
+  padding: 15px;
+  background-color: #eebbc3;
+  color: #232946;
+  border: none;
+  border-radius: 5px;
+  background-image: url(${doneImage});
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 24px 24px;
+  display: flex;
+
+
+  border-radius: 4px;
+  padding: 0 15px;
+  cursor: pointer;
+  height: 32px;
+  font-size: 14px;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    box-shadow: 1px 1px #53a7ea, 2px 2px #53a7ea, 3px 3px #53a7ea;
+    transform: translateX(-3px);
+  }
 `
 
 const TaskListEntry = ({_id, description, name, coins, difficulty}: ITask) => {
@@ -385,11 +485,13 @@ const TaskListEntry = ({_id, description, name, coins, difficulty}: ITask) => {
                 <StyledAction>
                     <StyledTableCell><StyledEdit> </StyledEdit></StyledTableCell>
                     <StyledTableCell><StyledDelete onClick={handleDelete}> </StyledDelete></StyledTableCell>
+                    <StyledTableCell><StyledDone> </StyledDone></StyledTableCell>
                 </StyledAction>
             </StyledTaskListElement>
         </StyledTaskTableRow>
     );
 }
+
 
 
 
