@@ -165,6 +165,13 @@ def get_pet_data():
     return AppResponse("ok", "", pet.to_dict()).to_dict()
 
 
+@app.route("/todoapi/get_auth", methods=['POST'])
+@exc_handler
+def get_auth():
+    login_player = auth_checker()
+    return AppResponse("ok", "", {"auth": not type(login_player) is dict}).to_dict()
+
+
 # Получить список всей существующей еды в игре
 #
 # INPUT:
