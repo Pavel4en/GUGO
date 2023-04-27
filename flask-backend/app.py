@@ -1,12 +1,14 @@
 from flask import make_response, Flask, render_template, request, session
 from flask_cors import CORS
 
-from game_classes import *
-from todo_classes import *
+from game_classes import Player, GameItems, GameFood, AppResponse, GameException
+from todo_classes import Task
+from bson.objectid import ObjectId
 
 from config import api_key
 
 # Подключаем api нейросетки davinci
+import openai
 openai.api_key = api_key
 from bd import *
 
@@ -32,14 +34,14 @@ def exc_handler(route_func):
                       "--- Game error ---\n" + \
                       str(ge)
             app.logger.error(log_msg)
-            return GameResponse("fail", str(ge), {}).to_dict(), 500
+            return AppResponse("fail", str(ge), {}).to_dict(), 500
         except Exception as e:
             log_msg = "--- Traceback of NOT GAME error ---\n" + \
                       ''.join(traceback.format_tb(e.__traceback__)) + \
                       "---  NOT GAME error ---\n" + \
                       str(e)
             app.logger.error(log_msg)
-            return GameResponse("fail", "internal error", {}).to_dict(), 500
+            return AppResponse("fail", "internal error", {}).to_dict(), 500
 
     exc_handled_route_func.__name__ = route_func.__name__
     return exc_handled_route_func
@@ -55,8 +57,8 @@ def auth_checker() -> dict | Player:
         if login_user:
             if hashed_password == login_user["hashedPassword"]:
                 return Player(login_user["playerId"])
-        return GameResponse("fail", "Wrong credentials", {}).to_dict()
-    return GameResponse("fail", "Have not required auth cookies", {}).to_dict()
+        return AppResponse("fail", "Wrong credentials", {}).to_dict()
+    return AppResponse("fail", "Have not required auth cookies", {}).to_dict()
 
 
 # Создать нового пользователя и создать ему пета с именем pet_name
@@ -83,7 +85,7 @@ def auth_checker() -> dict | Player:
 #   "description": "",
 #   "status": "ok"
 # }
-@app.route("/gameapi/create_player", methods=['POST'])
+@app.route("/todoapi/createplayer", methods=['POST'])
 @exc_handler
 def create_player():
     # Получаем словарь из json строки из запроса
@@ -93,7 +95,7 @@ def create_player():
 
     player = Player.create_user(pet_name)
     player.save()
-    return GameResponse("ok", "", player.to_dict()).to_dict()
+    return AppResponse("ok", "", player.to_dict()).to_dict()
 
 
 # Получить данные об игроке
@@ -113,17 +115,17 @@ def create_player():
 #   "description": "",
 #   "status": "ok"
 # }
-@app.route("/gameapi/get_player_data", methods=['POST'])
+@app.route("/todoapi/getplayer", methods=['POST'])
 @exc_handler
 def get_player_data():
     login_player = auth_checker()
-    if login_player is dict:
+    if type(login_player) is dict:
         return login_player
 
     pet = login_player.pet
     pet.update_pet_state()
     login_player.save()
-    return GameResponse("ok", "", login_player.to_dict()).to_dict()
+    return AppResponse("ok", "", login_player.to_dict()).to_dict()
 
 
 # Получить данные о питомце
@@ -150,17 +152,17 @@ def get_player_data():
 #   "description": "",
 #   "status": "ok"
 # }
-@app.route("/gameapi/get_pet_data", methods=['POST'])
+@app.route("/todoapi/getpet", methods=['POST'])
 @exc_handler
 def get_pet_data():
     login_player = auth_checker()
-    if login_player is dict:
+    if type(login_player) is dict:
         return login_player
 
     pet = login_player.pet
     pet.update_pet_state()
     login_player.save()
-    return GameResponse("ok", "", pet.to_dict()).to_dict()
+    return AppResponse("ok", "", pet.to_dict()).to_dict()
 
 
 # Получить список всей существующей еды в игре
@@ -190,15 +192,15 @@ def get_pet_data():
 #     "status": "ok",
 #     "desc": ""
 # }
-@app.route("/gameapi/get_all_game_food", methods=['POST'])
+@app.route("/todoapi/getallgamefood", methods=['POST'])
 @exc_handler
 def get_all_game_food():
     login_player = auth_checker()
-    if login_player is dict:
+    if type(login_player) is dict:
         return login_player
 
     gf = GameFood()
-    return GameResponse("ok", "", gf.get_all_food_as_dicts()).to_dict()
+    return AppResponse("ok", "", gf.get_all_food_as_dicts()).to_dict()
 
 
 # Получить список всех существующих вещей в игре
@@ -223,15 +225,15 @@ def get_all_game_food():
 #     "status": "ok",
 #     "desc": ""
 # }
-@app.route("/gameapi/get_all_game_items", methods=['POST'])
+@app.route("/todoapi/getallgameitems", methods=['POST'])
 @exc_handler
 def get_all_game_items():
     login_player = auth_checker()
-    if login_player is dict:
+    if type(login_player) is dict:
         return login_player
 
     gi = GameItems()
-    return GameResponse("ok", "", gi.get_all_items_as_dicts()).to_dict()
+    return AppResponse("ok", "", gi.get_all_items_as_dicts()).to_dict()
 
 
 # Покормить питомца
@@ -247,11 +249,11 @@ def get_all_game_items():
 #     "status": "ok"
 #     "desc": ""
 # }
-@app.route("/gameapi/feed_pet", methods=['POST'])
+@app.route("/todoapi/sendfoodeaten", methods=['POST'])
 @exc_handler
 def feed_pet():
     login_player = auth_checker()
-    if login_player is dict:
+    if type(login_player) is dict:
         return login_player
 
     request_data = request.get_json()
@@ -264,8 +266,8 @@ def feed_pet():
         login_player.gems -= food.price
         pet.feed(food)
         login_player.save()
-        return GameResponse("ok", "", {}).to_dict()
-    return GameResponse("fail", "There is no enough money to buy food with id " + food_id, {}).to_dict()
+        return AppResponse("ok", "", {}).to_dict()
+    return AppResponse("fail", "There is no enough money to buy food with id " + food_id, {}).to_dict()
 
 
 # Купить вещь, если достаточно денег
@@ -281,11 +283,11 @@ def feed_pet():
 #     "status": "ok"
 #     "desc": ""
 # }
-@app.route("/gameapi/buy_item", methods=['POST'])
+@app.route("/todoapi/buyitem", methods=['POST'])
 @exc_handler
 def buy_item():
     login_player = auth_checker()
-    if login_player is dict:
+    if type(login_player) is dict:
         return login_player
 
     # Получаем словарь из json строки из запроса
@@ -299,8 +301,8 @@ def buy_item():
         player_inventory.add(item)
         login_player.gems -= item.price
         login_player.save()
-        return GameResponse("ok", "", {}).to_dict()
-    return GameResponse("fail", "Not enough gems for buying item", {}).to_dict()
+        return AppResponse("ok", "", {}).to_dict()
+    return AppResponse("fail", "Not enough gems for buying item", {}).to_dict()
 
 
 # Надеть вещь на питомца
@@ -316,11 +318,11 @@ def buy_item():
 #     "status": "ok"
 #     "desc": ""
 # }
-@app.route("/gameapi/wear_item", methods=['POST'])
+@app.route("/todoapi/sendclothesputon", methods=['POST'])
 @exc_handler
 def wear_item():
     login_player = auth_checker()
-    if login_player is dict:
+    if type(login_player) is dict:
         return login_player
 
     # Получаем словарь из json строки из запроса
@@ -333,8 +335,8 @@ def wear_item():
         player_inventory.remove(item_id)
         pet.wear_item(item_id)
         login_player.save()
-        return GameResponse("ok", "", {}).to_dict()
-    return GameResponse("fail", "No such item in player inventory", {}).to_dict()
+        return AppResponse("ok", "", {}).to_dict()
+    return AppResponse("fail", "No such item in player inventory", {}).to_dict()
 
 
 # Снять вещь с питомца
@@ -350,11 +352,11 @@ def wear_item():
 #     "status": "ok",
 #     "desc": ""
 # }
-@app.route("/gameapi/take_off_item", methods=['POST'])
+@app.route("/todoapi/sendclothesremoved", methods=['POST'])
 @exc_handler
 def take_off_item():
     login_player = auth_checker()
-    if login_player is dict:
+    if type(login_player) is dict:
         return login_player
 
     # Получаем словарь из json строки из запроса
@@ -366,8 +368,8 @@ def take_off_item():
         pet.worn_things.remove(item_id)
         login_player.inventory.add_by_id(item_id)
         login_player.save()
-        return GameResponse("ok", "", {}).to_dict()
-    return GameResponse("fail", "No such item on players pet worn", {}).to_dict()
+        return AppResponse("ok", "", {}).to_dict()
+    return AppResponse("fail", "No such item on players pet worn", {}).to_dict()
 
 
 # Начислить gemCount гемов игроку
@@ -383,11 +385,11 @@ def take_off_item():
 #     "status": "ok",
 #     "desc": ""
 # }
-@app.route("/gameapi/give_gem", methods=['POST'])
+@app.route("/todoapi/givegem", methods=['POST'])
 @exc_handler
 def give_gems():
     login_player = auth_checker()
-    if login_player is dict:
+    if type(login_player) is dict:
         return login_player
 
     # Получаем словарь из json строки из запроса
@@ -397,8 +399,19 @@ def give_gems():
 
     login_player.gems += int(gem_count)
     login_player.save()
-    return GameResponse("ok", "", {}).to_dict()
+    return AppResponse("ok", "", {}).to_dict()
 
+
+@app.route("/todoapi/sendsleeptoggled", methods=['POST'])
+@exc_handler
+def toggle_sleep():
+    login_player = auth_checker()
+    if type(login_player) is dict:
+        return login_player
+
+    login_player.pet.is_sleeping_now = not login_player.pet.is_sleeping_now
+    login_player.save()
+    return AppResponse("ok", "", {}).to_dict()
 
 @app.route('/')
 def index():
@@ -416,10 +429,10 @@ def index():
 #
 # OUTPUT:
 # Статусный код
-@app.route('/add_task', methods=['POST'])
+@app.route('/todoapi/addtask', methods=['POST'])
 def add_task():
     login_player = auth_checker()
-    if login_player is dict:
+    if type(login_player) is dict:
         return login_player
 
     # Получаем словарь из json строки из запроса
@@ -431,7 +444,7 @@ def add_task():
     task = Task.create_new_task(task_name, task_description)
     tasks.insert_one(task.to_dict())
 
-    return make_response("", 200)
+    return AppResponse("ok", "", {}).to_dict()
 
 
 # Изменить задание по _id
@@ -445,10 +458,10 @@ def add_task():
 #
 # OUTPUT:
 # Статусный код
-@app.route('/edit_task', methods=['POST'])
+@app.route('/todoapi/edittask', methods=['POST'])
 def edit_task():
     login_player = auth_checker()
-    if login_player is dict:
+    if type(login_player) is dict:
         return login_player
 
     # Получаем словарь из json строки из запроса
@@ -461,7 +474,7 @@ def edit_task():
     task = Task.create_new_task(task_name, task_description)
     tasks.update_one({'_id': ObjectId(task_id)}, {'$set': task.to_dict()})
 
-    return make_response("", 200)
+    return AppResponse("ok", "", {}).to_dict()
 
 
 # Удалить задание по _id
@@ -473,10 +486,10 @@ def edit_task():
 #
 # OUTPUT:
 # Статусный код
-@app.route('/delete_task', methods=['POST'])
+@app.route('/todoapi/deletetask', methods=['POST'])
 def delete_task():
     login_player = auth_checker()
-    if login_player is dict:
+    if type(login_player) is dict:
         return login_player
 
     # Получаем словарь из json строки из запроса
@@ -485,7 +498,7 @@ def delete_task():
 
     # Удаляем задачу из коллекции
     tasks.delete_one({'_id': ObjectId(task_id)})
-    return make_response("", 200)
+    return AppResponse("ok", "", {}).to_dict()
 
 
 # Отметить задание _id выполненным
@@ -497,10 +510,10 @@ def delete_task():
 #
 # OUTPUT:
 # Статусный код
-@app.route('/complete_task', methods=['POST'])
+@app.route('/todoapi/completetask', methods=['POST'])
 def complete_task():
     login_player = auth_checker()
-    if login_player is dict:
+    if type(login_player) is dict:
         return login_player
 
     # Получаем словарь из json строки из запроса
@@ -516,7 +529,7 @@ def complete_task():
     archive_tasks.insert_one(task)
     # Удаляем задачу из коллекции задач
     tasks.delete_one({'_id': ObjectId(task_id)})
-    return make_response("", 200)
+    return AppResponse("ok", "", {}).to_dict()
 
 
 # Вернуть ВСЕ выполненные задания
@@ -535,17 +548,17 @@ def complete_task():
 #         "name": "Купить хлеб в другом городе"
 #     }
 # ]
-@app.route('/completed_tasks', methods=['POST'])
+@app.route('/todoapi/completedtasks', methods=['POST'])
 def get_complete_tasks():
     login_player = auth_checker()
-    if login_player is dict:
+    if type(login_player) is dict:
         return login_player
 
     complete_tasks_list = []
     for complete_task in archive_tasks.find():
         complete_task["_id"] = str(complete_task["_id"])
         complete_tasks_list.append(complete_task)
-    return complete_tasks_list
+    return AppResponse("ok", "", complete_tasks_list).to_dict()
 
 
 # Вернуть ВСЕ невыполненные задания
@@ -572,17 +585,17 @@ def get_complete_tasks():
 #         "name": "проехать на машине 1000 км"
 #     },
 # ]
-@app.route('/incompleted_tasks', methods=['POST'])
+@app.route('/todoapi/incompletedtasks', methods=['POST'])
 def get_incomplete_tasks():
     login_player = auth_checker()
-    if login_player is dict:
+    if type(login_player) is dict:
         return login_player
 
     incomplete_tasks_list = []
     for incomplete_task in tasks.find():
         incomplete_task["_id"] = str(incomplete_task["_id"])
         incomplete_tasks_list.append(incomplete_task)
-    return incomplete_tasks_list
+    return AppResponse("ok", "", incomplete_tasks_list).to_dict()
 
 
 # Функция login() использует объект "db" для получения доступа к базе данных, где хранятся
@@ -595,7 +608,7 @@ def get_incomplete_tasks():
 #
 # OUTPUT:
 # Статусный код
-@app.route('/login', methods=['POST'])
+@app.route('/todoapi/login', methods=['POST'])
 def login():
     login_data = request.get_json()
     login_user = users.find_one({'username': login_data['username']})
@@ -608,9 +621,9 @@ def login():
         if hashpas == login_user['hashedPassword']:
             session['username'] = login_data['username']
             session["hashedPassword"] = hashpas
-            return GameResponse("ok", "", {}).to_dict()
-        return GameResponse("fail", "Wrong credentials", {}).to_dict()
-    return GameResponse("fail", "User with that username didnt find", {}).to_dict()
+            return AppResponse("ok", "", {}).to_dict()
+        return AppResponse("fail", "Wrong credentials", {}).to_dict()
+    return AppResponse("fail", "User with that username didnt find", {}).to_dict()
 
 
 # Извлекает список всех зарегистрированных пользователей из коллекции "users" в базе
@@ -624,7 +637,7 @@ def login():
 #
 # OUTPUT:
 # Статусный код
-@app.route('/register', methods=['POST', 'GET'])
+@app.route('/todoapi/register', methods=['POST', 'GET'])
 def register():
     if request.method == 'POST':
         register_data = request.get_json()
@@ -644,9 +657,9 @@ def register():
 
             # Затем, функция сохраняет имя и баланс нового пользователя в сессию, используя объект session
             session['username'] = register_data['username']
-            session['hashedPassword'] = register_data['password']
-            return GameResponse("ok", "", {}).to_dict()
-        return GameResponse("fail", "User already exists", {}).to_dict()
+            session['hashedPassword'] = hashpass
+            return AppResponse("ok", "", {}).to_dict()
+        return AppResponse("fail", "User already exists", {}).to_dict()
     return render_template('register.html')
 
 

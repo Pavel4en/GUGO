@@ -13,7 +13,7 @@ class GameException(Exception):
 
 
 # Класс, содержащий ответ, связанный с логикой игры
-class GameResponse:
+class AppResponse:
     # Создать ответ
     def __init__(self, status: str, desc: str, data: dict | list):
         self.status = status
@@ -84,9 +84,14 @@ class Pet:
         try:
             self.name = str(pet_dict["name"])
             self.hunger = float(pet_dict["hunger"])
+            self.happiness = float(pet_dict["happiness"])
+            self.caffeine = float(pet_dict["caffeine"])
             self.worn_things = Inventory(pet_dict["wornThingsIds"])
             self.last_update_unixtime = float(pet_dict["lastUpdateUnixtime"])
             self.hunger_per_sec = float(pet_dict["hungerPerSec"])
+            self.happiness_per_sec = float(pet_dict["happinessPerSec"])
+            self.caffeine_per_sec = float(pet_dict["caffeinePerSec"])
+            self.is_sleeping_now = float(pet_dict["isSleepingNow"])
             self.update_pet_state()
         except KeyError:
             raise GameException("Invalid dictionary for initializing pet")
@@ -95,13 +100,22 @@ class Pet:
     @classmethod
     def create_new(cls, name: str):
         default_hunger = 100
+        default_happiness = 100
+        default_caffeine = 100
         default_hunger_per_sec = 0.01
+        default_happiness_per_sec = 0.01
+        default_caffeine_per_sec = 0.01
         pet_dict = {
             "name": name,
             "hunger": default_hunger,
+            "happiness": default_happiness,
+            "caffeine": default_caffeine,
             "wornThingsIds": [],
             "lastUpdateUnixtime": time(),
-            "hungerPerSec": default_hunger_per_sec
+            "hungerPerSec": default_hunger_per_sec,
+            "happinessPerSec": default_happiness_per_sec,
+            "caffeinePerSec": default_caffeine_per_sec,
+            "isSleepingNow": False
         }
         return Pet(pet_dict)
 
@@ -121,6 +135,11 @@ class Pet:
     def update_pet_state(self):
         time_diff = time() - self.last_update_unixtime
         self.hunger -= time_diff * self.hunger_per_sec
+        self.happiness -= time_diff * self.happiness_per_sec
+        if not self.is_sleeping_now:
+            self.caffeine -= time_diff * self.caffeine_per_sec
+        else:
+            self.caffeine += time_diff * self.caffeine_per_sec
         self.last_update_unixtime = time()
 
     # Преобразовать питомца в словарь
@@ -128,9 +147,14 @@ class Pet:
         return {
             "name": self.name,
             "hunger": self.hunger,
+            "happiness": self.happiness,
+            "caffeine": self.caffeine,
             "wornThingsIds": self.worn_things.to_list_only_ids(),
             "lastUpdateUnixtime": self.last_update_unixtime,
-            "hungerPerSec": self.hunger_per_sec
+            "hungerPerSec": self.hunger_per_sec,
+            "happinessPerSec": self.happiness_per_sec,
+            "caffeinePerSec": self.caffeine_per_sec,
+            "isSleepingNow": self.is_sleeping_now
         }
 
 
