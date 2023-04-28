@@ -18,7 +18,7 @@ export const sendPostOnURL = async <TResponse, >(
 ): Promise<TResponse> => {
     const requestOptions = {
         ...config,
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
     }
     try {
         const response = await fetch(url, requestOptions);
