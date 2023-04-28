@@ -36,7 +36,7 @@ export const todoSlice = createSlice({
             todo.name = action.payload.name;
             todo.description = action.payload.description;
         },
-        todoCompleted(state, action) {
+        todoCompleted(state, action: { payload: { _id: string }, type: string }) {
             const todo = state.entities.find(todo => todo._id === action.payload._id)
 
             if (todo === undefined)

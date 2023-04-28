@@ -16,7 +16,7 @@ export const sendPostOnURL = async <TResponse, >(
         headers: {'Content-Type': 'application/json'},
     }
 ): Promise<TResponse> => {
-    const requestOptions = {
+    const requestOptions: RequestInit = {
         ...config,
         body: JSON.stringify(data),
     }

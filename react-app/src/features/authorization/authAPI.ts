@@ -1,5 +1,5 @@
 import {sendPostOnURL} from "../../utils/webUtils";
-import {IAPIAuth} from "./interfacesAPI";
+import {IAPIAuth, IAPILogin} from "./interfacesAPI";
 import {IAPIAnswer} from "../../utils/webInterfaces";
 
 const authAPI_URL = 'http://localhost:5000/todoapi'
@@ -12,6 +12,6 @@ export const authAPI = {
         return sendPostOnURL<IAPIAnswer>(authAPI_URL + '/register', data);
     },
     sendLogin: (data: {username: string, password: string}) => {
-        return sendPostOnURL<IAPIAnswer>(authAPI_URL + '/login', data);
+        return sendPostOnURL<IAPILogin>(authAPI_URL + '/login', data);
     }
 }

@@ -1,9 +1,12 @@
 import {createSlice} from "@reduxjs/toolkit"
+
 import {
     IPet
 } from "../interfaces"
+
 import {IAPIPet} from "../API/interfacesAPI";
 
+import petClassic from '../images/pet-pet/m-classic.png'
 
 const initialState: IPet = {
     id: "",
@@ -15,7 +18,7 @@ const initialState: IPet = {
     },
     clothes: [] as string[],
     isSleeping: false,
-    mood: "normal"
+    mood: petClassic
 }
 
 export const petSlice = createSlice({

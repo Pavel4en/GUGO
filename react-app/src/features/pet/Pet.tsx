@@ -306,7 +306,8 @@ const StatsList = () => {
                     petReducedSatiety({amount: stats.hungerPerSec});
                     petReducedSleep({amount: stats.caffeinePerSec});
                     petReducedHappiness({amount: stats.happinessPerSec});
-                    updateMood()
+                    updateMood();
+                    console.log(satiety, caffeine, happiness)
                 }, 1000)
             )
             .then((timer) => setStatsTimer(timer));
@@ -350,7 +351,7 @@ const StyledPetNest = styled.div`
 
 const PetNest = ({children}: {children?: React.ReactElement<any, any>}) => {
     const mood = useSelector(selectMood);
-
+    console.log(mood);
     return <StyledPetNest mood={mood}>{children}</StyledPetNest>
 }
 

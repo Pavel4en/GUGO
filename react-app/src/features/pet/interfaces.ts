@@ -1,6 +1,9 @@
 // Interfaces
 import {IAPIAnswer} from "../../utils/webInterfaces";
 
+import petClassic from './images/pet-pet/m-classic.png'
+
+
 export interface IStats {
     satiety: number,
     caffeine: number,
@@ -13,5 +16,5 @@ export interface IPet {
     stats: IStats,
     clothes: string[],
     isSleeping: boolean,
-    mood: string
+    mood: typeof petClassic
 }

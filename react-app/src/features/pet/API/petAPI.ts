@@ -5,7 +5,7 @@ const petAPI_URL = 'http://localhost:5000/todoapi'
 
 export const petAPI = {
     getPet: (): Promise<IAPIPet> => {
-        return sendPostOnURL<IAPIPet>(petAPI_URL + '/get_pet_data')
+        return sendPostOnURL<IAPIPet>(petAPI_URL + '/get_pet')
     },
     sendFeedPet: (foodID: string) => {
         return sendPostOnURL(

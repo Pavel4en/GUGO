@@ -5,3 +5,8 @@ export interface IAPIAuth extends IAPIAnswer {
         auth: boolean
     }
 }
+export interface IAPILogin extends IAPIAnswer {
+    headers: {
+        "Set-Cookie": string
+    }
+}

@@ -5,6 +5,8 @@ import {authAPI} from "./authAPI";
 import {useNavigate} from "react-router";
 import {useAuthStatus} from "./hooks";
 import {Link, Navigate} from "react-router-dom";
+import {setSession} from "./authSlice";
+import {useDispatch} from "react-redux";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -86,6 +88,8 @@ const LoginApp = () => {
     const navigate = useNavigate();
     const authStatus = useAuthStatus();
 
+    const dispatcher = useDispatch();
+
     const handleEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const input = event.target.value;
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input)) {
@@ -122,6 +126,12 @@ const LoginApp = () => {
                 if (response.status !== 'ok') {
                     console.log('auth failed');
                 } else {
+                    console.log(response);
+                    const cookieAnswer = response.headers["Set-Cookie"];
+                    const session = cookieAnswer.slice(cookieAnswer.indexOf('='), cookieAnswer.indexOf(';'));
+                    dispatcher(setSession({
+                        session : session
+                    }))
                     authStatus.checkAuth()
                         .then(() => navigate('/'));
                 } // TODO login failed pop-up

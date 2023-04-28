@@ -320,6 +320,8 @@ const TaskList = () => {
         [dispatcher]
     );
 
+    console.log(taskList)
+
     const taskComponentList = taskList.map(
         (task: ITask) => <TaskListEntry {...task} />
     );
@@ -441,8 +443,10 @@ const TaskListEntry = ({_id, description, name, coins, difficulty}: ITask) => {
     const handleComplete = async (event: React.FormEvent<HTMLButtonElement>) => {
         event.preventDefault();
 
-        dispatcher(todoCompleted(_id));
+
+        dispatcher(todoCompleted({_id: _id}));
         dispatcher(todoDeleted(_id));
+        console.log('aue')
 
         const data = {
             _id: _id
