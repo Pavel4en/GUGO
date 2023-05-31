@@ -1,0 +1,19 @@
+#table2 {
+   margin-top: 30px;
+ }
+
+
+.panel {
+   margin: 10px;
+}
+.flex {
+   display: flex;
+   width: 70%;
+   margin: auto;
+   justify-content: space-evenly;
+   border: thin SpringGreen solid;
+}
+.flex div {
+   background: SpringGreen;
+   height: 100px;
+}
